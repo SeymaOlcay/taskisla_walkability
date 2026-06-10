@@ -1,0 +1,1892 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 37.28
+    },
+    {
+      "id": "2",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 81.969
+    },
+    {
+      "id": "3",
+      "floor": "basement",
+      "function": "laboratory",
+      "area": 69.484
+    },
+    {
+      "id": "4",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 76.689
+    },
+    {
+      "id": "5",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 211.347
+    },
+    {
+      "id": "6",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 200.476
+    },
+    {
+      "id": "7",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 158.597
+    },
+    {
+      "id": "8",
+      "floor": "basement",
+      "function": "archive",
+      "area": 195.369
+    },
+    {
+      "id": "9",
+      "floor": "basement",
+      "function": "laboratory",
+      "area": 89.229
+    },
+    {
+      "id": "10",
+      "floor": "basement",
+      "function": "laboratory",
+      "area": 410.465
+    },
+    {
+      "id": "11",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 123.876
+    },
+    {
+      "id": "12",
+      "floor": "basement",
+      "function": "technical_service",
+      "area": 110.96
+    },
+    {
+      "id": "13",
+      "floor": "basement",
+      "function": "workshop",
+      "area": 83.846
+    },
+    {
+      "id": "14",
+      "floor": "basement",
+      "function": "archive",
+      "area": 97.644
+    },
+    {
+      "id": "15",
+      "floor": "basement",
+      "function": "circulation",
+      "area": 44.177
+    },
+    {
+      "id": "16",
+      "floor": "basement",
+      "function": "wc",
+      "area": 191.457
+    },
+    {
+      "id": "17",
+      "floor": "basement",
+      "function": "circulation",
+      "area": 200.476
+    },
+    {
+      "id": "18",
+      "floor": "basement",
+      "function": "archive",
+      "area": 214.054
+    },
+    {
+      "id": "19",
+      "floor": "basement",
+      "function": "archive",
+      "area": 112.164
+    },
+    {
+      "id": "H1_B",
+      "floor": "basement",
+      "function": "circulation",
+      "area": 65.513
+    },
+    {
+      "id": "H2_B",
+      "floor": "basement",
+      "function": "circulation",
+      "area": 90.646
+    },
+    {
+      "id": "H3_B",
+      "floor": "basement",
+      "function": "circulation",
+      "area": 91.142
+    },
+    {
+      "id": "H4_B",
+      "floor": "basement",
+      "function": "circulation",
+      "area": 67.902
+    },
+    {
+      "id": "101",
+      "floor": "ground",
+      "function": "office",
+      "area": 10.193
+    },
+    {
+      "id": "102",
+      "floor": "ground",
+      "function": "exhibition_hall",
+      "area": 135.904
+    },
+    {
+      "id": "103",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 53.414
+    },
+    {
+      "id": "104",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 45.021
+    },
+    {
+      "id": "105",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 86.075
+    },
+    {
+      "id": "106",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 73.9
+    },
+    {
+      "id": "107",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 83.092
+    },
+    {
+      "id": "108",
+      "floor": "ground",
+      "function": "office",
+      "area": 32.15
+    },
+    {
+      "id": "109",
+      "floor": "ground",
+      "function": "conference_hall",
+      "area": 214.134
+    },
+    {
+      "id": "110",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 128.521
+    },
+    {
+      "id": "111",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 214.054
+    },
+    {
+      "id": "112",
+      "floor": "ground",
+      "function": "library",
+      "area": 191.457
+    },
+    {
+      "id": "113",
+      "floor": "ground",
+      "function": "circulation",
+      "area": 44.177
+    },
+    {
+      "id": "114",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 67.902
+    },
+    {
+      "id": "115",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 83.129
+    },
+    {
+      "id": "116",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 117.297
+    },
+    {
+      "id": "117",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 83.488
+    },
+    {
+      "id": "118",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 95.452
+    },
+    {
+      "id": "119",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 83.129
+    },
+    {
+      "id": "120",
+      "floor": "ground",
+      "function": "institute",
+      "area": 83.488
+    },
+    {
+      "id": "121",
+      "floor": "ground",
+      "function": "institute",
+      "area": 58.598
+    },
+    {
+      "id": "122",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 59.712
+    },
+    {
+      "id": "123",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 67.902
+    },
+    {
+      "id": "124",
+      "floor": "ground",
+      "function": "circulation",
+      "area": 44.177
+    },
+    {
+      "id": "125",
+      "floor": "ground",
+      "function": "wc",
+      "area": 191.457
+    },
+    {
+      "id": "126",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 207.592
+    },
+    {
+      "id": "127",
+      "floor": "ground",
+      "function": "conference_hall",
+      "area": 207.592
+    },
+    {
+      "id": "128",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 42.736
+    },
+    {
+      "id": "129",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 70.811
+    },
+    {
+      "id": "130",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 49.42
+    },
+    {
+      "id": "131",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 30.222
+    },
+    {
+      "id": "132",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 69.591
+    },
+    {
+      "id": "132A",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 45.021
+    },
+    {
+      "id": "133",
+      "floor": "ground",
+      "function": "office",
+      "area": 23.514
+    },
+    {
+      "id": "134",
+      "floor": "ground",
+      "function": "lecture_studio",
+      "area": 36.775
+    },
+    {
+      "id": "135",
+      "floor": "ground",
+      "function": "office",
+      "area": 26.374
+    },
+    {
+      "id": "136",
+      "floor": "ground",
+      "function": "research_centre",
+      "area": 66.024
+    },
+    {
+      "id": "137",
+      "floor": "ground",
+      "function": "office",
+      "area": 10.193
+    },
+    {
+      "id": "AVLU_G",
+      "floor": "ground",
+      "function": "courtyard",
+      "area": 2766.756
+    },
+    {
+      "id": "201",
+      "floor": "floor1",
+      "function": "administrative",
+      "area": 81.539
+    },
+    {
+      "id": "202",
+      "floor": "floor1",
+      "function": "administrative",
+      "area": 78.952
+    },
+    {
+      "id": "203",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 327.967
+    },
+    {
+      "id": "204",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 69.591
+    },
+    {
+      "id": "205",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 45.021
+    },
+    {
+      "id": "206",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 53.414
+    },
+    {
+      "id": "207",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 100.364
+    },
+    {
+      "id": "209",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 101.071
+    },
+    {
+      "id": "210",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 89.872
+    },
+    {
+      "id": "211",
+      "floor": "floor1",
+      "function": "library",
+      "area": 163.948
+    },
+    {
+      "id": "212",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 214.134
+    },
+    {
+      "id": "213",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 128.521
+    },
+    {
+      "id": "214",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 214.054
+    },
+    {
+      "id": "215",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 94.893
+    },
+    {
+      "id": "216",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 93.417
+    },
+    {
+      "id": "217A",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 85.714
+    },
+    {
+      "id": "217B",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 68.333
+    },
+    {
+      "id": "217C",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 80.731
+    },
+    {
+      "id": "217D",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 85.372
+    },
+    {
+      "id": "219",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 118.309
+    },
+    {
+      "id": "220",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 54.767
+    },
+    {
+      "id": "221",
+      "floor": "floor1",
+      "function": "research_centre",
+      "area": 26.89
+    },
+    {
+      "id": "222",
+      "floor": "floor1",
+      "function": "meeting",
+      "area": 95.452
+    },
+    {
+      "id": "223",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 83.488
+    },
+    {
+      "id": "225",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 58.598
+    },
+    {
+      "id": "226",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 59.712
+    },
+    {
+      "id": "227",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 90.743
+    },
+    {
+      "id": "228",
+      "floor": "floor1",
+      "function": "faculty_room",
+      "area": 94.308
+    },
+    {
+      "id": "229",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 207.592
+    },
+    {
+      "id": "230",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 143.106
+    },
+    {
+      "id": "231",
+      "floor": "floor1",
+      "function": "lecture_studio",
+      "area": 207.592
+    },
+    {
+      "id": "301",
+      "floor": "floor2",
+      "function": "circulation",
+      "area": 30.315
+    },
+    {
+      "id": "302",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 18.665
+    },
+    {
+      "id": "303",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 29.187
+    },
+    {
+      "id": "305",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 31.039
+    },
+    {
+      "id": "307",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 30.577
+    },
+    {
+      "id": "309",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 30.782
+    },
+    {
+      "id": "311",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 29.365
+    },
+    {
+      "id": "313",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 15.397
+    },
+    {
+      "id": "315",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 30.281
+    },
+    {
+      "id": "317",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 30.26
+    },
+    {
+      "id": "319",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 30.723
+    },
+    {
+      "id": "320",
+      "floor": "floor2",
+      "function": "circulation",
+      "area": 18.762
+    },
+    {
+      "id": "CATI_1",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 194.58
+    },
+    {
+      "id": "CATI_2",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 196.069
+    },
+    {
+      "id": "CATI_3",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 157.714
+    },
+    {
+      "id": "CATI_4",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 78.614
+    },
+    {
+      "id": "CATI_5",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 158.206
+    },
+    {
+      "id": "323",
+      "floor": "floor2",
+      "function": "office",
+      "area": 16.446
+    },
+    {
+      "id": "324",
+      "floor": "floor2",
+      "function": "office",
+      "area": 17.976
+    },
+    {
+      "id": "325",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 17.976
+    },
+    {
+      "id": "326",
+      "floor": "floor2",
+      "function": "meeting",
+      "area": 44.783
+    },
+    {
+      "id": "327",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 20.583
+    },
+    {
+      "id": "328",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 19.498
+    },
+    {
+      "id": "329",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 31.65
+    },
+    {
+      "id": "330",
+      "floor": "floor2",
+      "function": "office",
+      "area": 28.451
+    },
+    {
+      "id": "331",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 76.847
+    },
+    {
+      "id": "332",
+      "floor": "floor2",
+      "function": "virtual_studio",
+      "area": 54.036
+    },
+    {
+      "id": "333",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 77.774
+    },
+    {
+      "id": "334",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 71.864
+    },
+    {
+      "id": "335",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 49.99
+    },
+    {
+      "id": "336",
+      "floor": "floor2",
+      "function": "office",
+      "area": 12.004
+    },
+    {
+      "id": "337A",
+      "floor": "floor2",
+      "function": "office",
+      "area": 17.057
+    },
+    {
+      "id": "337B",
+      "floor": "floor2",
+      "function": "office",
+      "area": 19.052
+    },
+    {
+      "id": "338",
+      "floor": "floor2",
+      "function": "office",
+      "area": 20.19
+    },
+    {
+      "id": "339",
+      "floor": "floor2",
+      "function": "office",
+      "area": 41.681
+    },
+    {
+      "id": "340",
+      "floor": "floor2",
+      "function": "office",
+      "area": 35.601
+    },
+    {
+      "id": "341A",
+      "floor": "floor2",
+      "function": "office",
+      "area": 17.655
+    },
+    {
+      "id": "341B",
+      "floor": "floor2",
+      "function": "office",
+      "area": 17.493
+    },
+    {
+      "id": "342",
+      "floor": "floor2",
+      "function": "office",
+      "area": 9.698
+    },
+    {
+      "id": "343",
+      "floor": "floor2",
+      "function": "office",
+      "area": 28.451
+    },
+    {
+      "id": "344",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 31.65
+    },
+    {
+      "id": "345",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 19.498
+    },
+    {
+      "id": "346",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 20.583
+    },
+    {
+      "id": "347",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 44.783
+    },
+    {
+      "id": "348",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 23.226
+    },
+    {
+      "id": "349",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 20.448
+    },
+    {
+      "id": "350",
+      "floor": "floor2",
+      "function": "administrative",
+      "area": 19.394
+    },
+    {
+      "id": "3400",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 636.148
+    },
+    {
+      "id": "3401",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 56.14
+    },
+    {
+      "id": "3402",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 57.223
+    },
+    {
+      "id": "3403",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 55.59
+    },
+    {
+      "id": "3404",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 84.216
+    },
+    {
+      "id": "3405",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 56.433
+    },
+    {
+      "id": "3406",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 56.487
+    },
+    {
+      "id": "3407",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 56.438
+    },
+    {
+      "id": "373",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 19.394
+    },
+    {
+      "id": "374",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 20.448
+    },
+    {
+      "id": "375",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 23.226
+    },
+    {
+      "id": "376A",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 12.394
+    },
+    {
+      "id": "376B",
+      "floor": "floor2",
+      "function": "office",
+      "area": 19.92
+    },
+    {
+      "id": "377",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 20.583
+    },
+    {
+      "id": "378",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 19.498
+    },
+    {
+      "id": "379",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 31.65
+    },
+    {
+      "id": "380",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 28.451
+    },
+    {
+      "id": "3501",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 24.303
+    },
+    {
+      "id": "3502",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 61.601
+    },
+    {
+      "id": "3503",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 63.152
+    },
+    {
+      "id": "3504",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 62.005
+    },
+    {
+      "id": "3505",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 61.597
+    },
+    {
+      "id": "3506",
+      "floor": "floor2",
+      "function": "lecture_studio",
+      "area": 24.442
+    },
+    {
+      "id": "3507",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 19.189
+    },
+    {
+      "id": "3508",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 15.727
+    },
+    {
+      "id": "3509",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 16.619
+    },
+    {
+      "id": "3510",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 16.293
+    },
+    {
+      "id": "3511A",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 25.206
+    },
+    {
+      "id": "3511B",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 24.658
+    },
+    {
+      "id": "3512A",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 24.915
+    },
+    {
+      "id": "3512B",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 24.043
+    },
+    {
+      "id": "3513",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 16.474
+    },
+    {
+      "id": "3514",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 16.169
+    },
+    {
+      "id": "3515",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 15.993
+    },
+    {
+      "id": "3516",
+      "floor": "floor2",
+      "function": "faculty_room",
+      "area": 20.541
+    },
+    {
+      "id": "389",
+      "floor": "floor2",
+      "function": "workshop",
+      "area": 61.349
+    },
+    {
+      "id": "390",
+      "floor": "floor2",
+      "function": "workshop",
+      "area": 43.156
+    },
+    {
+      "id": "391",
+      "floor": "floor2",
+      "function": "workshop",
+      "area": 45.56
+    },
+    {
+      "id": "392",
+      "floor": "floor2",
+      "function": "workshop",
+      "area": 18.186
+    },
+    {
+      "id": "393",
+      "floor": "floor2",
+      "function": "workshop",
+      "area": 19.782
+    },
+    {
+      "id": "394",
+      "floor": "floor2",
+      "function": "workshop",
+      "area": 16.283
+    }
+  ],
+  "edges": [
+    [
+      "1",
+      "H4_B"
+    ],
+    [
+      "2",
+      "H4_B"
+    ],
+    [
+      "3",
+      "H4_B"
+    ],
+    [
+      "4",
+      "H4_B"
+    ],
+    [
+      "4",
+      "5"
+    ],
+    [
+      "4",
+      "101"
+    ],
+    [
+      "6",
+      "H4_B"
+    ],
+    [
+      "7",
+      "H4_B"
+    ],
+    [
+      "8",
+      "H4_B"
+    ],
+    [
+      "9",
+      "H4_B"
+    ],
+    [
+      "10",
+      "H4_B"
+    ],
+    [
+      "11",
+      "H4_B"
+    ],
+    [
+      "11",
+      "H2_B"
+    ],
+    [
+      "12",
+      "H3_B"
+    ],
+    [
+      "12",
+      "H2_B"
+    ],
+    [
+      "13",
+      "H2_B"
+    ],
+    [
+      "13",
+      "H1_B"
+    ],
+    [
+      "14",
+      "H1_B"
+    ],
+    [
+      "15",
+      "17"
+    ],
+    [
+      "15",
+      "16"
+    ],
+    [
+      "15",
+      "H1_B"
+    ],
+    [
+      "15",
+      "H2_B"
+    ],
+    [
+      "15",
+      "H3_B"
+    ],
+    [
+      "15",
+      "H4_B"
+    ],
+    [
+      "15",
+      "113"
+    ],
+    [
+      "17",
+      "18"
+    ],
+    [
+      "17",
+      "H1_B"
+    ],
+    [
+      "17",
+      "H2_B"
+    ],
+    [
+      "17",
+      "H3_B"
+    ],
+    [
+      "17",
+      "H4_B"
+    ],
+    [
+      "18",
+      "19"
+    ],
+    [
+      "19",
+      "108"
+    ],
+    [
+      "H1_B",
+      "H2_B"
+    ],
+    [
+      "H1_B",
+      "H3_B"
+    ],
+    [
+      "H1_B",
+      "H4_B"
+    ],
+    [
+      "H2_B",
+      "H3_B"
+    ],
+    [
+      "H2_B",
+      "H4_B"
+    ],
+    [
+      "H3_B",
+      "H4_B"
+    ],
+    [
+      "H3_B",
+      "124"
+    ],
+    [
+      "101",
+      "AVLU_G"
+    ],
+    [
+      "101",
+      "205"
+    ],
+    [
+      "102",
+      "AVLU_G"
+    ],
+    [
+      "103",
+      "AVLU_G"
+    ],
+    [
+      "104",
+      "AVLU_G"
+    ],
+    [
+      "105",
+      "AVLU_G"
+    ],
+    [
+      "106",
+      "AVLU_G"
+    ],
+    [
+      "107",
+      "AVLU_G"
+    ],
+    [
+      "108",
+      "AVLU_G"
+    ],
+    [
+      "108",
+      "210"
+    ],
+    [
+      "109",
+      "AVLU_G"
+    ],
+    [
+      "110",
+      "113"
+    ],
+    [
+      "111",
+      "113"
+    ],
+    [
+      "112",
+      "113"
+    ],
+    [
+      "113",
+      "AVLU_G"
+    ],
+    [
+      "113",
+      "114"
+    ],
+    [
+      "113",
+      "116"
+    ],
+    [
+      "113",
+      "117"
+    ],
+    [
+      "113",
+      "124"
+    ],
+    [
+      "113",
+      "221"
+    ],
+    [
+      "115",
+      "AVLU_G"
+    ],
+    [
+      "118",
+      "AVLU_G"
+    ],
+    [
+      "119",
+      "AVLU_G"
+    ],
+    [
+      "120",
+      "124"
+    ],
+    [
+      "121",
+      "124"
+    ],
+    [
+      "122",
+      "124"
+    ],
+    [
+      "123",
+      "124"
+    ],
+    [
+      "124",
+      "AVLU_G"
+    ],
+    [
+      "124",
+      "125"
+    ],
+    [
+      "124",
+      "126"
+    ],
+    [
+      "124",
+      "225"
+    ],
+    [
+      "127",
+      "AVLU_G"
+    ],
+    [
+      "128",
+      "AVLU_G"
+    ],
+    [
+      "129",
+      "AVLU_G"
+    ],
+    [
+      "130",
+      "AVLU_G"
+    ],
+    [
+      "131",
+      "AVLU_G"
+    ],
+    [
+      "132",
+      "AVLU_G"
+    ],
+    [
+      "132A",
+      "AVLU_G"
+    ],
+    [
+      "133",
+      "AVLU_G"
+    ],
+    [
+      "134",
+      "AVLU_G"
+    ],
+    [
+      "135",
+      "AVLU_G"
+    ],
+    [
+      "135",
+      "137"
+    ],
+    [
+      "136",
+      "AVLU_G"
+    ],
+    [
+      "201",
+      "205"
+    ],
+    [
+      "202",
+      "205"
+    ],
+    [
+      "203",
+      "205"
+    ],
+    [
+      "204",
+      "205"
+    ],
+    [
+      "205",
+      "301"
+    ],
+    [
+      "205",
+      "206"
+    ],
+    [
+      "205",
+      "207"
+    ],
+    [
+      "205",
+      "231"
+    ],
+    [
+      "209",
+      "210"
+    ],
+    [
+      "210",
+      "320"
+    ],
+    [
+      "210",
+      "211"
+    ],
+    [
+      "210",
+      "212"
+    ],
+    [
+      "210",
+      "213"
+    ],
+    [
+      "214",
+      "221"
+    ],
+    [
+      "215",
+      "221"
+    ],
+    [
+      "216",
+      "221"
+    ],
+    [
+      "217A",
+      "221"
+    ],
+    [
+      "217B",
+      "221"
+    ],
+    [
+      "217C",
+      "225"
+    ],
+    [
+      "217D",
+      "225"
+    ],
+    [
+      "219",
+      "221"
+    ],
+    [
+      "220",
+      "221"
+    ],
+    [
+      "221",
+      "342"
+    ],
+    [
+      "221",
+      "222"
+    ],
+    [
+      "223",
+      "225"
+    ],
+    [
+      "225",
+      "376A"
+    ],
+    [
+      "225",
+      "226"
+    ],
+    [
+      "225",
+      "227"
+    ],
+    [
+      "225",
+      "228"
+    ],
+    [
+      "225",
+      "229"
+    ],
+    [
+      "225",
+      "230"
+    ],
+    [
+      "301",
+      "320"
+    ],
+    [
+      "301",
+      "302"
+    ],
+    [
+      "301",
+      "303"
+    ],
+    [
+      "301",
+      "305"
+    ],
+    [
+      "301",
+      "307"
+    ],
+    [
+      "301",
+      "309"
+    ],
+    [
+      "301",
+      "CATI_3"
+    ],
+    [
+      "301",
+      "CATI_4"
+    ],
+    [
+      "301",
+      "CATI_5"
+    ],
+    [
+      "301",
+      "3405"
+    ],
+    [
+      "301",
+      "3406"
+    ],
+    [
+      "301",
+      "3407"
+    ],
+    [
+      "301",
+      "373"
+    ],
+    [
+      "301",
+      "374"
+    ],
+    [
+      "301",
+      "375"
+    ],
+    [
+      "301",
+      "376A"
+    ],
+    [
+      "301",
+      "376B"
+    ],
+    [
+      "301",
+      "377"
+    ],
+    [
+      "301",
+      "378"
+    ],
+    [
+      "301",
+      "379"
+    ],
+    [
+      "301",
+      "380"
+    ],
+    [
+      "301",
+      "3501"
+    ],
+    [
+      "301",
+      "3502"
+    ],
+    [
+      "301",
+      "3503"
+    ],
+    [
+      "301",
+      "3504"
+    ],
+    [
+      "301",
+      "3505"
+    ],
+    [
+      "301",
+      "3506"
+    ],
+    [
+      "301",
+      "3507"
+    ],
+    [
+      "301",
+      "3508"
+    ],
+    [
+      "301",
+      "3509"
+    ],
+    [
+      "301",
+      "3510"
+    ],
+    [
+      "301",
+      "3511A"
+    ],
+    [
+      "301",
+      "3511B"
+    ],
+    [
+      "301",
+      "3512A"
+    ],
+    [
+      "301",
+      "3512B"
+    ],
+    [
+      "301",
+      "3513"
+    ],
+    [
+      "301",
+      "3514"
+    ],
+    [
+      "301",
+      "3515"
+    ],
+    [
+      "301",
+      "3516"
+    ],
+    [
+      "301",
+      "389"
+    ],
+    [
+      "301",
+      "390"
+    ],
+    [
+      "301",
+      "391"
+    ],
+    [
+      "301",
+      "392"
+    ],
+    [
+      "301",
+      "393"
+    ],
+    [
+      "301",
+      "394"
+    ],
+    [
+      "311",
+      "320"
+    ],
+    [
+      "313",
+      "320"
+    ],
+    [
+      "315",
+      "320"
+    ],
+    [
+      "317",
+      "320"
+    ],
+    [
+      "319",
+      "320"
+    ],
+    [
+      "320",
+      "CATI_1"
+    ],
+    [
+      "320",
+      "CATI_2"
+    ],
+    [
+      "320",
+      "323"
+    ],
+    [
+      "320",
+      "324"
+    ],
+    [
+      "320",
+      "325"
+    ],
+    [
+      "320",
+      "326"
+    ],
+    [
+      "320",
+      "327"
+    ],
+    [
+      "320",
+      "328"
+    ],
+    [
+      "320",
+      "329"
+    ],
+    [
+      "320",
+      "330"
+    ],
+    [
+      "320",
+      "331"
+    ],
+    [
+      "320",
+      "332"
+    ],
+    [
+      "320",
+      "333"
+    ],
+    [
+      "320",
+      "334"
+    ],
+    [
+      "320",
+      "335"
+    ],
+    [
+      "320",
+      "336"
+    ],
+    [
+      "320",
+      "337A"
+    ],
+    [
+      "320",
+      "337B"
+    ],
+    [
+      "320",
+      "338"
+    ],
+    [
+      "320",
+      "339"
+    ],
+    [
+      "320",
+      "340"
+    ],
+    [
+      "320",
+      "341A"
+    ],
+    [
+      "320",
+      "341B"
+    ],
+    [
+      "320",
+      "342"
+    ],
+    [
+      "320",
+      "343"
+    ],
+    [
+      "320",
+      "344"
+    ],
+    [
+      "320",
+      "345"
+    ],
+    [
+      "320",
+      "346"
+    ],
+    [
+      "320",
+      "347"
+    ],
+    [
+      "320",
+      "348"
+    ],
+    [
+      "320",
+      "349"
+    ],
+    [
+      "320",
+      "350"
+    ],
+    [
+      "320",
+      "3400"
+    ],
+    [
+      "320",
+      "3401"
+    ],
+    [
+      "320",
+      "3402"
+    ],
+    [
+      "320",
+      "3403"
+    ],
+    [
+      "320",
+      "3404"
+    ]
+  ]
+}

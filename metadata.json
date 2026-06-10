@@ -1,0 +1,56 @@
+{
+  "project": "MBL549E Final Project — Taşkışla Walkability Analysis",
+  "title": "Taşkışla: Historical plan vs. contemporary function — a walkability inquiry",
+  "data_source": [
+    "Manual extraction from ITU Faculty of Architecture official floor plans (Taşkışla Building, 4 levels)",
+    "Polyline geometry traced in Rhinoceros 8 by the author",
+    "Door and stair connections manually recorded from plans",
+    "Geometric attributes computed via Grasshopper + Python (shapely)",
+    "Space syntax metrics computed via NetworkX graph analysis"
+  ],
+  "building": {
+    "name": "Taşkışla",
+    "architect": "William James Smith",
+    "construction_period": "1846–1852",
+    "function_change": "Originally military barracks; ITU Faculty of Architecture since 1943",
+    "dimensions": "132 × 95 m with a central courtyard of 70 × 40 m",
+    "floors": 4,
+    "location": "Taksim, Istanbul, Türkiye"
+  },
+  "research_question": "Does Taşkışla's 1850 plan, designed as military barracks, align with the walkability needs of today's architectural education?",
+  "narrative": "The building was not designed together with its current academic program — a 19th-century military logic now houses 21st-century design education. This project measures the topological accessibility of each space from the main entrance and asks where today's academic priorities align with — and where they conflict with — the historical plan.",
+  "audience": [
+    "Architects and spatial designers",
+    "Space syntax researchers",
+    "Adaptive reuse specialists",
+    "Heritage building consultants",
+    "Architectural educators"
+  ],
+  "total_records": 181,
+  "total_columns": 18,
+  "data_collection_date": "2026-05-01 to 2026-06-07",
+  "graph_structure": {
+    "nodes": 181,
+    "edges": 200,
+    "entrance_node": "137",
+    "max_step_depth": 6
+  },
+  "methodology": [
+    "Stage 01 — Manual data collection: 181 spaces extracted from floor plans",
+    "Stage 02 — Rhino + Grasshopper: polyline tracing, geometry, area, centroid",
+    "Stage 03 — Python + NetworkX: graph construction, space syntax metrics (integration, connectivity, mean depth, step depth)",
+    "Stage 04 — Walkability alignment scoring: walkability_norm × (priority / 5)",
+    "Stage 05 — Audit and infographics"
+  ],
+  "formulas": {
+    "walkability_norm": "1 - (step_depth_from_entrance / max_step_depth)",
+    "alignment": "walkability_norm × (function_priority / 5)",
+    "integration_hh": "1 / RRA (Hillier 1984)",
+    "function_priority_scale": "5 critical, 4 high, 3 medium, 2 low, 1 peripheral"
+  },
+  "student": {
+    "name": "Şeyma Olcay",
+    "program": "Architectural Design Computing (ADC) Master's, ITU",
+    "course": "MBL549E Special Topics in Architectural Design"
+  }
+}

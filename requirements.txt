@@ -1,0 +1,10 @@
+pandas
+numpy
+networkx
+shapely
+ezdxf
+matplotlib
+seaborn
+scipy
+openpyxl
+jupyter

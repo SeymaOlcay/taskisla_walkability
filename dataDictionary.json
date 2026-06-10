@@ -1,0 +1,74 @@
+{
+  "room_id": {
+    "type": "string",
+    "description": "Unique identifier for each space, traced from ITU Faculty of Architecture floor plans. Numeric for most rooms; alphanumeric for stair landings and specific zones (e.g., 'S_NW', 'CATI_3')."
+  },
+  "floor": {
+    "type": "string (categorical)",
+    "description": "Floor level of the space. One of: 'basement', 'ground', 'floor1', 'floor2'."
+  },
+  "function_type": {
+    "type": "string (categorical)",
+    "description": "Primary functional category. One of 18 types: lecture_studio, workshop, archive, laboratory, administrative, office, faculty_room, circulation, research_centre, library, meeting, conference_hall, exhibition_hall, courtyard, wc, institute, virtual_studio, technical_service."
+  },
+  "function_detail": {
+    "type": "string",
+    "description": "Specific name or detail of the space as labelled in original plans (e.g., 'Takı Tasarım Atölyesi', 'Süleyman Demirel Konferans Salonu')."
+  },
+  "area_m2": {
+    "type": "float",
+    "description": "Floor area in square meters, computed from polyline geometry in Grasshopper."
+  },
+  "perimeter_m": {
+    "type": "float",
+    "description": "Perimeter length of the space in meters, computed from reconstructed polygon in Python (shapely)."
+  },
+  "centroid_x": {
+    "type": "float",
+    "description": "X coordinate of the space centroid in the Rhino model coordinate system (meters)."
+  },
+  "centroid_y": {
+    "type": "float",
+    "description": "Y coordinate of the space centroid in the Rhino model coordinate system (meters)."
+  },
+  "door_count": {
+    "type": "int",
+    "description": "Number of doors connecting the space to other spaces (corridors, adjacent rooms, exterior). Counted manually from floor plans."
+  },
+  "window_count": {
+    "type": "int",
+    "description": "Number of windows opening to the exterior facade or the inner courtyard."
+  },
+  "facade_orientation": {
+    "type": "string (categorical)",
+    "description": "Cardinal/intermediate direction of the primary exterior facade. One of: N, NE, E, SE, S, SW, W, NW, interior."
+  },
+  "opens_to": {
+    "type": "string",
+    "description": "Direct spatial connections of this room, recorded as a comma-separated list (e.g., 'corridor', 'room_5,corridor', 'outside'). Used to construct the graph in NetworkX."
+  },
+  "nearest_stair_id": {
+    "type": "string (categorical)",
+    "description": "Identifier of the nearest stair core. One of: S_NW, S_NE, S_SW, S_SE (the four corner stairs of the building)."
+  },
+  "nearest_stair_distance_m": {
+    "type": "float",
+    "description": "Euclidean distance from the space centroid to the nearest stair landing, in meters."
+  },
+  "integration_hh": {
+    "type": "float",
+    "description": "Hillier's Integration HH metric (1 / RRA). Higher values indicate spaces topologically more central in the spatial graph. Computed via NetworkX from the constructed room-door graph."
+  },
+  "connectivity": {
+    "type": "int",
+    "description": "Graph-theoretic degree of the node — the number of direct neighbours (rooms connected by a doorway). Higher values indicate more locally connected spaces."
+  },
+  "mean_depth": {
+    "type": "float",
+    "description": "Mean depth: average shortest-path distance from this space to all other spaces in the graph. Lower values indicate more accessible spaces."
+  },
+  "step_depth_from_entrance": {
+    "type": "int",
+    "description": "Shortest-path distance (BFS) from the main entrance node (#137, Güvenlik) to this space. Range: 0 (entrance itself) to 6 (deepest, most isolated). Used as the basis for walkability scoring."
+  }
+}
