@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBL549E Case Study 4 — Group B</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #FAFAF7;
+  --bg2: #F2F1EC;
+  --text: #1a1a18;
+  --text2: #6b6b64;
+  --text3: #9d9d95;
+  --accent: #1D9E75;
+  --accent2: #D85A30;
+  --border: rgba(0,0,0,0.08);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Source Sans 3', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 0 2rem; }
+
+header {
+  padding: 5rem 0 3rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+header .overline {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 1rem;
+}
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  max-width: 700px;
+  margin-bottom: 1rem;
+}
+header h1 em { color: var(--accent2); font-style: italic; }
+header .subtitle {
+  font-size: 1.15rem;
+  color: var(--text2);
+  max-width: 600px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text3);
+}
+.meta-bar dt { font-weight: 600; color: var(--text2); }
+.meta-bar dd { margin-left: 0; }
+
+section { margin-bottom: 4rem; }
+section h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--text);
+}
+section p { margin-bottom: 1rem; max-width: 680px; }
+
+.highlight-box {
+  background: var(--bg2);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 1.05rem;
+}
+.highlight-box strong { color: var(--accent2); }
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 1.5rem 0;
+}
+.stat-card {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.stat-card .label { font-size: 12px; color: var(--text3); }
+.stat-card .value { font-size: 1.5rem; font-weight: 600; }
+.stat-card .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.chart-wrap {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+.chart-title {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.chart-caption {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text2);
+  margin: 0.75rem 0;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+.tooltip {
+  position: fixed;
+  display: none;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 100;
+  line-height: 1.6;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  max-width: 240px;
+}
+
+.mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 1rem 0;
+}
+.mapping-table th, .mapping-table td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.mapping-table th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 0;
+  margin-top: 4rem;
+  font-size: 13px;
+  color: var(--text3);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <div class="overline">MBL549E — Case Study 4 &middot; Information Visualization</div>
+  <h1>Does Wikipedia tell the <em>same story</em> everywhere?</h1>
+  <p class="subtitle">A geographic bias analysis of 211 Wikipedia articles on buildings by 8 Italian architects — from Palladio to Renzo Piano.</p>
+  <dl class="meta-bar">
+    <div><dt>Team</dt><dd>Group B</dd></div>
+    <div><dt>Members</dt><dd>Merve Civcik &middot; Hamdi &Ccedil;ak&#305;r &middot; &Scedil;eyma Olcay</dd></div>
+    <div><dt>Dataset</dt><dd>211 buildings &middot; 20 countries &middot; 8 architects</dd></div>
+    <div><dt>Source</dt><dd>English Wikipedia (scraped ethically)</dd></div>
+  </dl>
+</header>
+
+<!-- ===================== 1. THE STORY ===================== -->
+<section id="story">
+  <h2>1. The story</h2>
+  <p>We scraped 211 Wikipedia pages — one for every building attributed to eight celebrated Italian architects. We measured each article's text length as a proxy for how much attention Wikipedia gives to a building.</p>
+  <p>Our central question:</p>
+  <div class="highlight-box">
+    <strong>Do buildings located abroad receive more detailed Wikipedia coverage than buildings in Italy — even though the architects are Italian?</strong>
+  </div>
+  <p>The answer, supported by statistical testing, is a clear <strong>yes</strong>. Articles about buildings in the United States are roughly <strong>4&times;</strong> longer than those in Italy. The effect holds across all non-Italian countries combined.</p>
+</section>
+
+<!-- ===================== 2. AUDIENCE ===================== -->
+<section id="audience">
+  <h2>2. Audience</h2>
+  <p>This visualization targets an <strong>academic audience</strong> — students and researchers interested in data bias, digital humanities, and computational approaches to architectural history. We assume comfort with basic statistical concepts (median, IQR, skewness) and aim for explanatory rather than exploratory communication.</p>
+</section>
+
+<!-- ===================== 3. VIZ: OVERVIEW ===================== -->
+<section id="viz-overview">
+  <h2>3. The data at a glance</h2>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="label">Buildings</div>
+      <div class="value">211</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Countries</div>
+      <div class="value">20</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">In Italy</div>
+      <div class="value" style="color:var(--accent)">139</div>
+      <div class="sub">66% of dataset</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Abroad</div>
+      <div class="value" style="color:var(--accent2)">72</div>
+      <div class="sub">34% of dataset</div>
+    </div>
+  </div>
+
+  <p>Of the original 71 records with missing country data, our automated pipeline (paragraph text mining + city-to-country dictionary) resolved 70 — a 99% recovery rate with zero manual assignment.</p>
+</section>
+
+<!-- ===================== 3.1 BOXPLOT BY COUNTRY ===================== -->
+<section id="viz-boxplot">
+  <h3>3.1 Article length by country</h3>
+  <p>The horizontal boxplot below shows article text-length distributions for every country with at least two buildings. Countries are sorted by median.</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title">Wikipedia article length by country</div>
+    <div class="legend-row">
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Median line</div>
+      <div class="legend-item"><svg width="12" height="12"><path d="M2,6 L6,2 L10,6 L6,10Z" fill="#D85A30"/></svg> Mean</div>
+      <div class="legend-item"><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#534AB766"/></svg> Outlier</div>
+    </div>
+    <div style="position:relative; width:100%; overflow-x:auto;">
+      <canvas id="boxCanvas" style="display:block;"></canvas>
+    </div>
+    <div class="chart-caption">Hover over a row to see full statistics. Note: Italy's extreme outlier (56,561 chars) is St. Peter's Basilica.</div>
+  </div>
+  <div class="tooltip" id="boxTip"></div>
+</section>
+
+<!-- ===================== 3.2 ITALY vs ABROAD ===================== -->
+<section id="viz-comparison">
+  <h3>3.2 Italy vs. abroad</h3>
+  <p>Grouping all non-Italian countries together sharpens the contrast.</p>
+
+  <div class="two-col">
+    <div class="chart-wrap">
+      <div class="chart-title">Distribution comparison</div>
+      <div style="position:relative; height:280px;"><canvas id="compChart"></canvas></div>
+    </div>
+    <div>
+      <div class="stat-row" style="grid-template-columns:1fr 1fr;">
+        <div class="stat-card"><div class="label">Italy — median</div><div class="value" style="color:var(--accent)">2,484</div><div class="sub">n = 139</div></div>
+        <div class="stat-card"><div class="label">Abroad — median</div><div class="value" style="color:var(--accent2)">4,025</div><div class="sub">n = 72</div></div>
+        <div class="stat-card"><div class="label">Italy — mean</div><div class="value" style="color:var(--accent)">3,694</div><div class="sub">std = 5,331</div></div>
+        <div class="stat-card"><div class="label">Abroad — mean</div><div class="value" style="color:var(--accent2)">8,411</div><div class="sub">std = 11,063</div></div>
+      </div>
+      <div class="highlight-box" style="margin-top:1rem;">
+        <strong>Mann-Whitney U test</strong><br>
+        U = 6,604 &middot; p = 0.0001<br>
+        <span style="font-size:14px;color:var(--text2);">Articles abroad are statistically significantly longer (p &lt; 0.001).</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3.3 ARCHITECTURAL CHERNOFF ===================== -->
+<section id="viz-buildings">
+  <h3>3.3 Architectural Chernoff — statistics as buildings</h3>
+  <p>We map six statistical properties of each country's article-length distribution onto the architectural form of a building. This creates an intuitive "skyline" where the shape of each building encodes its data profile.</p>
+
+  <table class="mapping-table">
+    <thead><tr><th>Building feature</th><th>Statistic</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td>Width</td><td>Mean</td><td>Higher average article length &rarr; wider building</td></tr>
+      <tr><td>Height (floors)</td><td>Median</td><td>Central tendency of distribution &rarr; taller building</td></tr>
+      <tr><td>Roof steepness</td><td>Skewness</td><td>Right-skewed distribution &rarr; steep pointed roof</td></tr>
+      <tr><td>Window size</td><td>Std. deviation</td><td>High variance &rarr; large windows (diverse articles)</td></tr>
+      <tr><td>Chimney height</td><td>Kurtosis</td><td>Heavy tails / extreme outliers &rarr; tall chimney</td></tr>
+      <tr><td>Door width</td><td>Mode</td><td>Most common article length &rarr; door width</td></tr>
+    </tbody>
+  </table>
+
+  <div class="chart-wrap">
+    <div class="chart-title">Skyline — countries sorted by median article length</div>
+    <div style="position:relative; width:100%; overflow-x:auto;">
+      <canvas id="skyCanvas" style="display:block;"></canvas>
+    </div>
+    <div class="chart-caption">Hover over a building for details. Italy's extremely tall chimney reflects its kurtosis of 68 — one article (St. Peter's Basilica, 56k characters) dwarfs all others.</div>
+  </div>
+  <div class="tooltip" id="skyTip"></div>
+</section>
+
+<!-- ===================== 4. EVALUATION ===================== -->
+<section id="evaluation">
+  <h2>4. Evaluation and reflection</h2>
+
+  <h3>What the visualization confirms</h3>
+  <p>The geographic bias is clear and statistically significant. Buildings located in English-speaking countries (US, UK) receive substantially more detailed Wikipedia coverage. This likely reflects the demographics of English Wikipedia's editor base rather than any inherent difference in architectural significance.</p>
+
+  <h3>Unexpected findings</h3>
+  <p><strong>Italy's extreme kurtosis (68.07)</strong> was the most surprising discovery. While Italy's median article length is modest (2,484 chars), a single entry — St. Peter's Basilica at 56,561 characters — creates an extreme outlier that inflates the mean and produces an extraordinarily heavy-tailed distribution. The Architectural Chernoff skyline makes this visible at a glance through Italy's disproportionately tall chimney.</p>
+  <p><strong>Carlo Maderno's paradox:</strong> Despite having only 14 buildings (the fewest), his articles average 10,587 characters — the highest per-building coverage of any architect. This is because several of his works (St. Peter's Basilica, Palazzo Barberini) are globally iconic landmarks that attract extensive Wikipedia editing.</p>
+  <p><strong>Small-sample countries</strong> like Japan (n=2, median 10,433) and Malta (n=2, median 8,188) show high medians, but their tiny sample sizes mean these figures are unreliable. The Architectural Chernoff makes this limitation visible: their buildings look dramatic but lack the "texture" (floor count, window variation) that comes from larger samples.</p>
+
+  <h3>Limitations</h3>
+  <p>Text length is a coarse proxy for coverage quality — a long article may be verbose rather than informative. Future work could incorporate revision count, reference count, or readability scores. Additionally, 2 of 211 records (~1%) could not be country-matched automatically and were excluded from analysis.</p>
+</section>
+
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    MBL549E Special Topics &middot; Istanbul Technical University &middot; Spring 2026 &middot; Group B
+  </div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+const COUNTRIES = [
+  {name:"United Kingdom",n:3,mean:11142,median:13938,mode:1434,std:8655,skew:-0.53,kurt:-1.5,q1:7686,q3:15996,wl:1434,wh:18053,outliers:[],color:"#D4537E"},
+  {name:"Japan",n:2,mean:10433,median:10433,mode:814,std:13603,skew:0,kurt:0,q1:5623,q3:15242,wl:814,wh:20051,outliers:[],color:"#BA7517"},
+  {name:"United States",n:20,mean:15559,median:10070,mode:590,std:16443,skew:1.67,kurt:1.89,q1:6035,q3:16399,wl:590,wh:31945,outliers:[42673,46061,62497],color:"#D85A30"},
+  {name:"Malta",n:2,mean:8188,median:8188,mode:6260,std:2726,skew:0,kurt:0,q1:7224,q3:9151,wl:6260,wh:10115,outliers:[],color:"#639922"},
+  {name:"Australia",n:2,mean:4305,median:4305,mode:2926,std:1949,skew:0,kurt:0,q1:3615,q3:4994,wl:2926,wh:5683,outliers:[],color:"#5DCAA5"},
+  {name:"Russia",n:17,mean:5262,median:3516,mode:1141,std:5279,skew:1.93,kurt:2.38,q1:2120,q3:4917,wl:1141,wh:9113,outliers:[18203,18828],color:"#534AB7"},
+  {name:"Switzerland",n:2,mean:2924,median:2924,mode:1311,std:2280,skew:0,kurt:0,q1:2117,q3:3730,wl:1311,wh:4536,outliers:[],color:"#85B7EB"},
+  {name:"France",n:8,mean:5191,median:2572,mode:1220,std:6474,skew:1.95,kurt:2.28,q1:1701,q3:5263,wl:1220,wh:10607,outliers:[20586],color:"#378ADD"},
+  {name:"Italy",n:139,mean:3694,median:2484,mode:2769,std:5331,skew:7.32,kurt:68.07,q1:1438,q3:4122,wl:303,wh:8146,outliers:[8190,8308,8484,8706,9502,10450,10968,11017,11210,11699,12675,16486,56561],color:"#1D9E75"},
+  {name:"Germany",n:3,mean:2513,median:2408,mode:1905,std:666,skew:0.28,kurt:-1.5,q1:2157,q3:2817,wl:1905,wh:3225,outliers:[],color:"#888780"},
+  {name:"Taiwan",n:2,mean:2218,median:2218,mode:2174,std:62,skew:0,kurt:0,q1:2196,q3:2239,wl:2174,wh:2261,outliers:[],color:"#AFA9EC"},
+  {name:"Netherlands",n:2,mean:1485,median:1485,mode:382,std:1560,skew:0,kurt:0,q1:934,q3:2037,wl:382,wh:2588,outliers:[],color:"#ED93B1"}
+];
+
+function nr(v,arr){const mn=Math.min(...arr),mx=Math.max(...arr);return mx===mn?0.5:(v-mn)/(mx-mn);}
+
+// ============================================================
+// BOXPLOT
+// ============================================================
+(function(){
+  const canvas=document.getElementById('boxCanvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const mL=130,mR=30,mT=15,mB=45;
+  const boxH=28,gap=10;
+  const cH=COUNTRIES.length*(boxH+gap)+mT+mB;
+  const cW=Math.max(680,canvas.parentElement.clientWidth);
+  canvas.width=cW*dpr;canvas.height=cH*dpr;
+  canvas.style.width=cW+'px';canvas.style.height=cH+'px';
+  ctx.scale(dpr,dpr);
+
+  const allMax=Math.max(...COUNTRIES.map(c=>Math.max(c.wh,...c.outliers)));
+  const scaleMax=Math.ceil(allMax/10000)*10000;
+  const pW=cW-mL-mR;
+  function xS(v){return mL+(v/scaleMax)*pW;}
+
+  const gridCol='rgba(0,0,0,0.04)';
+  const whiskerCol='rgba(0,0,0,0.3)';
+
+  [0,10000,20000,30000,40000,50000,60000].filter(v=>v<=scaleMax).forEach(v=>{
+    const x=xS(v);
+    ctx.strokeStyle=gridCol;ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(x,mT);ctx.lineTo(x,cH-mB);ctx.stroke();
+    ctx.fillStyle='#9d9d95';ctx.font='10px system-ui';ctx.textAlign='center';
+    ctx.fillText(v>=1000?Math.round(v/1000)+'k':v,x,cH-mB+14);
+  });
+
+  ctx.fillStyle='#9d9d95';ctx.font='11px system-ui';ctx.textAlign='center';
+  ctx.fillText('Article text length (characters)',mL+pW/2,cH-4);
+
+  const hitAreas=[];
+
+  COUNTRIES.forEach((c,i)=>{
+    const y=mT+i*(boxH+gap), midY=y+boxH/2, col=c.color, colA=col+'28';
+    const x1=xS(c.wl),xQ1=xS(c.q1),xMed=xS(c.median),xQ3=xS(c.q3),x2=xS(c.wh);
+
+    ctx.fillStyle='#1a1a18';ctx.font='11px system-ui';ctx.textAlign='right';
+    ctx.fillText(c.name,mL-10,midY+4);
+    ctx.fillStyle='#9d9d95';ctx.font='9px system-ui';
+    ctx.fillText('n='+c.n,mL-10,midY+14);
+
+    ctx.strokeStyle=whiskerCol;ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(x1,midY);ctx.lineTo(xQ1,midY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xQ3,midY);ctx.lineTo(x2,midY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x1,y+7);ctx.lineTo(x1,y+boxH-7);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2,y+7);ctx.lineTo(x2,y+boxH-7);ctx.stroke();
+
+    ctx.fillStyle=colA;ctx.strokeStyle=col;ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(xQ1,y,xQ3-xQ1,boxH,3);ctx.fill();ctx.stroke();
+
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(xMed,y+2);ctx.lineTo(xMed,y+boxH-2);ctx.stroke();
+
+    const xMean=xS(c.mean);
+    ctx.fillStyle=col;ctx.beginPath();
+    ctx.moveTo(xMean,midY-4);ctx.lineTo(xMean+3.5,midY);ctx.lineTo(xMean,midY+4);ctx.lineTo(xMean-3.5,midY);
+    ctx.closePath();ctx.fill();
+
+    c.outliers.forEach(o=>{
+      const ox=xS(o);if(ox<=cW-mR+10){
+        ctx.fillStyle=col;ctx.globalAlpha=0.5;
+        ctx.beginPath();ctx.arc(ox,midY,3,0,Math.PI*2);ctx.fill();
+        ctx.globalAlpha=1;
+      }
+    });
+    hitAreas.push({y,h:boxH,stat:c});
+  });
+
+  const tip=document.getElementById('boxTip');
+  canvas.addEventListener('mousemove',e=>{
+    const r=canvas.getBoundingClientRect();
+    const my=e.clientY-r.top;
+    let f=null;
+    for(const h of hitAreas)if(my>=h.y&&my<=h.y+h.h){f=h;break;}
+    if(f){
+      const s=f.stat;
+      tip.innerHTML=`<div style="font-weight:600;color:${s.color};margin-bottom:3px;">${s.name} <span style="font-weight:400;color:#9d9d95">n=${s.n}</span></div>`
+        +`<div>Median: <b>${s.median.toLocaleString()}</b></div>`
+        +`<div>Mean: ${s.mean.toLocaleString()} &loz;</div>`
+        +`<div style="color:#6b6b64">Q1: ${s.q1.toLocaleString()} &middot; Q3: ${s.q3.toLocaleString()} &middot; IQR: ${Math.round(s.q3-s.q1).toLocaleString()}</div>`
+        +`<div style="color:#6b6b64">Std: ${s.std.toLocaleString()} &middot; Skew: ${s.skew} &middot; Kurt: ${s.kurt}</div>`
+        +(s.outliers.length?`<div style="color:#6b6b64">Outliers: ${s.outliers.length}</div>`:'');
+      tip.style.display='block';
+      tip.style.left=Math.min(e.clientX+14,window.innerWidth-260)+'px';
+      tip.style.top=(e.clientY-50)+'px';
+    }else tip.style.display='none';
+  });
+  canvas.addEventListener('mouseleave',()=>tip.style.display='none');
+})();
+
+// ============================================================
+// ITALY vs ABROAD — Chart.js
+// ============================================================
+new Chart(document.getElementById('compChart'),{
+  type:'bar',
+  data:{
+    labels:['Italy','Abroad'],
+    datasets:[
+      {label:'Mean',data:[3694,8411],backgroundColor:['#1D9E7566','#D85A3066'],borderColor:['#1D9E75','#D85A30'],borderWidth:1.5,borderRadius:4},
+      {label:'Median',data:[2484,4025],backgroundColor:['#1D9E75','#D85A30'],borderRadius:4}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:13,weight:'bold'}}},
+      y:{title:{display:true,text:'Characters',font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'},ticks:{callback:v=>v>=1000?Math.round(v/1000)+'k':v}}
+    },
+    plugins:{
+      legend:{position:'bottom',labels:{font:{size:11},boxWidth:12,padding:16}},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw.toLocaleString()+' chars'}}
+    }
+  }
+});
+
+// ============================================================
+// ARCHITECTURAL CHERNOFF SKYLINE
+// ============================================================
+(function(){
+  const sorted=[...COUNTRIES].sort((a,b)=>a.median-b.median);
+  const canvas=document.getElementById('skyCanvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+
+  const cellW=110,cellH=340,groundY=cellH-50;
+  const totalW=sorted.length*cellW;
+
+  canvas.width=totalW*dpr;canvas.height=cellH*dpr;
+  canvas.style.width=totalW+'px';canvas.style.height=cellH+'px';
+  ctx.scale(dpr,dpr);
+
+  const aM=sorted.map(s=>s.mean),aMd=sorted.map(s=>s.median),aS=sorted.map(s=>s.std);
+  const aMo=sorted.map(s=>s.mode),aSk=sorted.map(s=>s.skew),aK=sorted.map(s=>s.kurt);
+
+  ctx.strokeStyle='rgba(0,0,0,0.06)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,groundY);ctx.lineTo(totalW,groundY);ctx.stroke();
+
+  const hitB=[];
+
+  sorted.forEach((s,i)=>{
+    const cx=i*cellW+cellW/2;
+    const nM=nr(s.mean,aM),nMd=nr(s.median,aMd),nS=nr(s.std,aS);
+    const nMo=nr(s.mode,aMo),nSk=nr(s.skew,aSk),nK=nr(s.kurt,aK);
+
+    const bW=32+nM*48, bH=45+nMd*155;
+    const bx=cx-bW/2, by=groundY-bH;
+    const roofH=10+nSk*42;
+    const hipI=bW*0.18*(1-nSk);
+    const roofTop=by-roofH;
+    const chimH=5+nK*58, chimW=6, chimX=cx+bW*0.18;
+    const chimTop=roofTop-chimH+roofH*0.3;
+
+    const col=s.color, colA=col+'22';
+
+    if(chimH>8){
+      ctx.fillStyle=col;ctx.globalAlpha=0.3;
+      ctx.beginPath();ctx.roundRect(chimX-chimW/2,chimTop,chimW,roofTop-chimTop+roofH*0.45,1);ctx.fill();
+      ctx.globalAlpha=1;
+      for(let si=0;si<3;si++){
+        ctx.fillStyle='rgba(0,0,0,0.03)';
+        ctx.beginPath();ctx.arc(chimX+si*3-3,chimTop-4-si*5,2+si*1.2,0,Math.PI*2);ctx.fill();
+      }
+    }
+
+    ctx.fillStyle=colA;ctx.strokeStyle=col;ctx.lineWidth=1.2;
+    ctx.beginPath();
+    ctx.moveTo(bx-3,by);ctx.lineTo(cx-hipI,roofTop);ctx.lineTo(cx+hipI,roofTop);ctx.lineTo(bx+bW+3,by);
+    ctx.closePath();ctx.fill();ctx.stroke();
+
+    ctx.fillStyle=colA;ctx.strokeStyle=col;ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(bx,by,bW,bH,1);ctx.fill();ctx.stroke();
+
+    const winSz=5+nS*12;
+    const nFl=Math.max(1,Math.round(1+nMd*3));
+    const nWpf=bW>52?3:2;
+    for(let fl=0;fl<nFl;fl++){
+      const wy=by+9+fl*(bH-22)/nFl;
+      for(let wi=0;wi<nWpf;wi++){
+        const wx=bx+(wi+1)*bW/(nWpf+1)-winSz/2;
+        if(wy+winSz*1.2<groundY-20){
+          ctx.fillStyle='rgba(255,220,130,0.28)';ctx.strokeStyle=col;ctx.lineWidth=0.4;
+          ctx.beginPath();ctx.roundRect(wx,wy,winSz,winSz*1.2,1);ctx.fill();ctx.stroke();
+          ctx.strokeStyle=col;ctx.lineWidth=0.25;ctx.globalAlpha=0.4;
+          ctx.beginPath();ctx.moveTo(wx+winSz/2,wy);ctx.lineTo(wx+winSz/2,wy+winSz*1.2);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(wx,wy+winSz*0.6);ctx.lineTo(wx+winSz,wy+winSz*0.6);ctx.stroke();
+          ctx.globalAlpha=1;
+        }
+      }
+    }
+
+    const dW=7+nMo*13, dH=Math.min(bH*0.2,26);
+    ctx.fillStyle=col;ctx.globalAlpha=0.35;
+    ctx.beginPath();ctx.roundRect(cx-dW/2,groundY-dH,dW,dH,2);ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(cx+dW/2-3,groundY-dH/2,1.5,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle=col;ctx.font='500 10px system-ui';ctx.textAlign='center';
+    ctx.fillText(s.name,cx,groundY+14);
+    ctx.fillStyle='#9d9d95';ctx.font='9px system-ui';
+    ctx.fillText('n='+s.n,cx,groundY+25);
+
+    hitB.push({x:i*cellW,w:cellW,stat:s,bH,bW});
+  });
+
+  const tip=document.getElementById('skyTip');
+  canvas.addEventListener('mousemove',e=>{
+    const r=canvas.getBoundingClientRect();
+    const scX=totalW/r.width;
+    const mx=(e.clientX-r.left)*scX;
+    let f=null;
+    for(const h of hitB)if(mx>=h.x&&mx<h.x+h.w){f=h;break;}
+    if(f){
+      const s=f.stat;
+      tip.innerHTML=`<div style="font-weight:600;color:${s.color};margin-bottom:3px;">${s.name} <span style="font-weight:400;color:#9d9d95">n=${s.n}</span></div>`
+        +`<div>Mean: ${s.mean.toLocaleString()} <span style="color:#9d9d95;font-size:11px">(width)</span></div>`
+        +`<div>Median: ${s.median.toLocaleString()} <span style="color:#9d9d95;font-size:11px">(height)</span></div>`
+        +`<div>Mode: ${s.mode.toLocaleString()} <span style="color:#9d9d95;font-size:11px">(door)</span></div>`
+        +`<div>Std: ${s.std.toLocaleString()} <span style="color:#9d9d95;font-size:11px">(windows)</span></div>`
+        +`<div>Skew: ${s.skew.toFixed(2)} <span style="color:#9d9d95;font-size:11px">(roof)</span></div>`
+        +`<div>Kurt: ${s.kurt.toFixed(2)} <span style="color:#9d9d95;font-size:11px">(chimney)</span></div>`;
+      tip.style.display='block';
+      tip.style.left=Math.min(e.clientX+14,window.innerWidth-240)+'px';
+      tip.style.top=(e.clientY-70)+'px';
+    }else tip.style.display='none';
+  });
+  canvas.addEventListener('mouseleave',()=>tip.style.display='none');
+})();
+</script>
+
+</body>
+</html>

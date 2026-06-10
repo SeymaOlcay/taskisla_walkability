@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>From Local to Global — Architectural Production Across Five Centuries</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#FFF8F5;--bg-warm:#F6EDE8;--bg-card:#FFFFFF;--bg-surface:#FDF3EF;--bg-dark:#2C1F1A;
+  --coral:#D85C4A;--coral-light:#E8897C;--coral-dim:#C04838;
+  --rose:#E07A8E;--rose-light:#F3C7D0;--peach:#F08A6C;--peach-light:#F7C4B4;
+  --amber:#C96A2B;--amber-light:#E8A878;--blush:#EED6CF;
+  --text-primary:#2C1F1A;--text-body:#4A3530;--text-dim:#7A6260;--text-muted:#B8A8A4;--text-faint:#D8CCCA;
+  --rule:#E8D8D4;--rule-strong:#C8B0AA;
+  --radius:4px;--shadow:0 2px 16px rgba(44,31,26,0.08);--shadow-hover:0 6px 28px rgba(44,31,26,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text-primary);font-family:'Manrope',sans-serif;font-weight:300;font-size:15px;line-height:1.6;overflow-x:hidden;}
+.max-w{max-width:1160px;margin:0 auto;padding:0 56px;}
+.eyebrow{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--coral);display:block;margin-bottom:14px;}
+.section-title{font-family:'Instrument Serif',serif;font-size:clamp(26px,3vw,36px);font-weight:400;line-height:1.15;color:var(--text-primary);margin-bottom:12px;}
+.section-body{font-size:14.5px;line-height:1.8;color:var(--text-body);max-width:640px;margin-bottom:36px;}
+.rule{border:none;border-top:1px solid var(--rule);margin:0;}
+.rule-strong{border-top-color:var(--rule-strong);}
+
+/* NAV */
+.progress-nav{position:fixed;right:24px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:100;}
+.progress-dot{width:6px;height:6px;border-radius:50%;background:var(--text-faint);transition:background 0.3s,transform 0.3s;cursor:pointer;}
+.progress-dot.active{background:var(--coral);transform:scale(1.5);}
+
+/* TOOLTIP */
+.g-tooltip{position:fixed;background:var(--bg-dark);color:#F6EDE8;padding:10px 14px;border-radius:var(--radius);font-family:'Space Grotesk',sans-serif;font-size:12px;line-height:1.5;pointer-events:none;opacity:0;transition:opacity 0.12s;z-index:9999;max-width:220px;}
+.g-tooltip strong{color:var(--peach-light);}
+.s-tooltip{position:fixed;background:var(--bg-dark);color:#F6EDE8;border:1px solid rgba(246,237,232,0.15);padding:10px 14px;border-radius:var(--radius);font-family:'Space Grotesk',sans-serif;font-size:12px;line-height:1.5;pointer-events:none;opacity:0;transition:opacity 0.12s;z-index:9998;}
+.s-tooltip strong{color:var(--peach-light);}
+
+/* HERO */
+.hero{background:var(--bg-dark);position:relative;overflow:hidden;padding:100px 0 80px;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 50%,rgba(216,92,74,0.18) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 20% 30%,rgba(200,106,43,0.10) 0%,transparent 60%);pointer-events:none;}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr 380px;gap:80px;align-items:center;}
+.hero .eyebrow{color:rgba(247,196,180,0.75);}
+.hero-title{font-family:'Instrument Serif',serif;font-size:clamp(44px,5.5vw,72px);font-weight:400;line-height:1.05;color:#FFF8F5;margin-bottom:10px;}
+.hero-title em{font-style:italic;color:var(--peach-light);}
+.hero-subtitle{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:rgba(246,237,232,0.4);margin-bottom:28px;}
+.hero-desc{font-size:15px;line-height:1.8;color:rgba(246,237,232,0.65);max-width:520px;}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(246,237,232,0.1);border:1px solid rgba(246,237,232,0.1);border-radius:var(--radius);overflow:hidden;}
+.hero-stat{background:rgba(44,31,26,0.65);padding:24px 20px;}
+.hero-stat-num{font-family:'Instrument Serif',serif;font-size:44px;color:var(--peach-light);line-height:1;display:block;}
+.hero-stat-label{font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(246,237,232,0.35);margin-top:6px;display:block;}
+.hero-kicker{margin-top:24px;padding:18px 20px;border:1px solid rgba(246,237,232,0.12);border-radius:var(--radius);}
+.hero-kicker p{font-size:13px;line-height:1.7;color:rgba(246,237,232,0.5);}
+.hero-kicker strong{color:var(--peach-light);font-weight:500;}
+
+/* SECTIONS */
+.section{padding:80px 0;}
+.section-alt{background:var(--bg-warm);}
+.section-dark{background:var(--bg-dark);color:#F6EDE8;}
+.section-dark .section-title{color:#FFF8F5;}
+.section-dark .section-body{color:rgba(246,237,232,0.6);}
+.section-dark .eyebrow{color:var(--peach-light);}
+.section-header{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:48px;}
+.section-header.full{grid-template-columns:1fr;}
+.section-header-right{padding-top:48px;}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:24px;}
+.legend-item{display:flex;align-items:center;gap:7px;}
+.legend-swatch{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.legend-label{font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:0.3px;color:var(--text-dim);}
+.section-dark .legend-label{color:rgba(246,237,232,0.45);}
+
+/* CHART PANELS */
+.chart-panel{background:var(--bg-card);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.section-dark .chart-panel{background:rgba(255,255,255,0.04);border-color:rgba(246,237,232,0.1);}
+.chart-panel-header{padding:16px 22px 14px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;}
+.section-dark .chart-panel-header{border-bottom-color:rgba(246,237,232,0.08);}
+.chart-panel-title{font-family:'Space Grotesk',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);}
+.section-dark .chart-panel-title{color:rgba(246,237,232,0.35);}
+.chart-panel-note{font-size:11px;color:var(--text-muted);}
+
+/* SAMPLE PANEL */
+.sample-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;min-height:90px;}
+.sample-hint{grid-column:1/-1;font-size:13px;color:var(--text-muted);padding:28px 0 8px;display:flex;align-items:center;gap:8px;}
+.sample-hint::before{content:'↑';color:var(--coral-light);}
+.sample-card{background:var(--bg-surface);border:1px solid var(--rule);border-radius:var(--radius);padding:14px 16px;text-decoration:none;display:block;transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s;}
+.sample-card:hover{border-color:var(--coral-light);box-shadow:var(--shadow-hover);transform:translateY(-2px);}
+.sample-card-type{font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:6px;}
+.sample-card-title{font-family:'Instrument Serif',serif;font-size:15px;color:var(--text-primary);line-height:1.35;margin-bottom:5px;}
+.sample-card-country{font-size:11px;color:var(--text-muted);}
+
+/* SMALL MULTIPLES */
+.small-multiples{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;}
+.sm-cell{background:var(--bg-card);padding:18px 14px 16px;}
+.sm-period{font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--coral);margin-bottom:3px;}
+.sm-dates{font-size:9.5px;color:var(--text-muted);margin-bottom:14px;}
+.sm-total{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text-primary);line-height:1;margin-bottom:14px;}
+.sm-bar-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.sm-bar-label{font-size:8.5px;color:var(--text-muted);width:52px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sm-bar-track{flex:1;height:4px;background:var(--rule);border-radius:2px;overflow:hidden;}
+.sm-bar-fill{height:100%;border-radius:2px;}
+.sm-bar-num{font-size:8.5px;color:var(--text-muted);width:14px;text-align:right;flex-shrink:0;}
+
+/* COUNTRY */
+.country-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
+.country-bar-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.country-bar-label{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--text-dim);width:120px;flex-shrink:0;}
+.country-bar-track{flex:1;height:3px;background:var(--rule);border-radius:2px;overflow:hidden;}
+.country-bar-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+.country-bar-num{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;color:var(--text-body);width:28px;text-align:right;flex-shrink:0;}
+.country-pct{font-size:11px;color:var(--text-muted);width:36px;text-align:right;flex-shrink:0;}
+.country-insight{background:var(--bg-surface);border-left:3px solid var(--coral);border-radius:0 var(--radius) var(--radius) 0;padding:20px 22px;margin-bottom:20px;}
+.country-insight-title{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text-primary);margin-bottom:8px;}
+.country-insight p{font-size:13.5px;line-height:1.75;color:var(--text-body);}
+.country-insight strong{color:var(--coral);font-weight:500;}
+
+/* DIVERSITY */
+.diversity-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:16px;margin-top:8px;}
+.diversity-col{text-align:center;}
+.diversity-label{font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--coral);margin-bottom:10px;}
+.diversity-donut{display:block;margin:0 auto 8px;}
+.diversity-types-label{font-size:10px;color:var(--text-muted);}
+
+/* FINDINGS */
+.findings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;}
+.finding-card{background:rgba(255,255,255,0.05);border:1px solid rgba(246,237,232,0.1);border-radius:var(--radius);padding:28px 24px;}
+.finding-num{font-family:'Instrument Serif',serif;font-size:44px;color:var(--peach-light);line-height:1;margin-bottom:8px;}
+.finding-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:rgba(246,237,232,0.35);margin-bottom:12px;}
+.finding-desc{font-size:13.5px;line-height:1.75;color:rgba(246,237,232,0.6);}
+
+/* REFLECTION */
+.reflection-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;padding-top:48px;border-top:1px solid rgba(246,237,232,0.1);margin-top:64px;}
+.reflection-block-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--peach-light);margin-bottom:14px;}
+.reflection-block p{font-size:14px;line-height:1.85;color:rgba(246,237,232,0.6);}
+.reflection-block p+p{margin-top:12px;}
+
+footer{background:#1E1510;padding:40px 0;}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;}
+.footer-left{font-size:12px;color:rgba(246,237,232,0.3);line-height:1.7;}
+.footer-right{font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(246,237,232,0.2);text-align:right;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.7s ease forwards;}
+.d1{animation-delay:0.05s;opacity:0;}.d2{animation-delay:0.15s;opacity:0;}.d3{animation-delay:0.28s;opacity:0;}.d4{animation-delay:0.42s;opacity:0;}
+svg text{user-select:none;}
+</style>
+</head>
+<body>
+
+<nav class="progress-nav" id="progress-nav">
+  <div class="progress-dot active" data-section="hero" title="Intro"></div>
+  <div class="progress-dot" data-section="s1" title="Era × Type"></div>
+  <div class="progress-dot" data-section="s2" title="Period Profiles"></div>
+  <div class="progress-dot" data-section="s3" title="Flow"></div>
+  <div class="progress-dot" data-section="s4" title="Geography"></div>
+  <div class="progress-dot" data-section="s5" title="Diversity"></div>
+  <div class="progress-dot" data-section="s6" title="Findings"></div>
+</nav>
+
+<div class="g-tooltip" id="g-tt"></div>
+<div class="s-tooltip" id="s-tt"></div>
+
+<!-- HERO -->
+<section class="hero" id="hero" data-nav="hero">
+<div class="max-w">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow fade-up d1">MBL549E · Information Visualization · Case Study 4</span>
+      <h1 class="hero-title fade-up d2">From Local<br/>to <em>Global</em></h1>
+      <p class="hero-subtitle fade-up d2">How Italian Architectural Production Expanded Across Five Centuries</p>
+      <p class="hero-desc fade-up d3">
+        Six architects. Seven stylistic eras. 211 buildings. This data story traces how architectural practice evolved
+        from tightly bound regional programs — Palladian villas in the Veneto, Baroque churches in Rome —
+        toward a globally distributed, institutionally diverse output in the contemporary period.
+      </p>
+    </div>
+    <div class="fade-up d4">
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num">211</span><span class="hero-stat-label">Buildings</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">6</span><span class="hero-stat-label">Architects</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">7</span><span class="hero-stat-label">Eras</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">9</span><span class="hero-stat-label">Typologies</span></div>
+      </div>
+      <div class="hero-kicker">
+        <p>In the Renaissance, <strong>84%</strong> of buildings were residential. By the Contemporary period, that share dropped to <strong>20%</strong>, replaced by cultural institutions, infrastructure, and civic space.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- S1 BUBBLE -->
+<section class="section" id="s1" data-nav="s1">
+<div class="max-w">
+  <div class="section-header">
+    <div>
+      <span class="eyebrow">01 — Era × Typology</span>
+      <h2 class="section-title">What Each Era Built</h2>
+      <p class="section-body">Bubble size reflects building count within each era-typology pair. Early periods show stark concentration in residential and religious programs. The shift toward cultural and commercial types begins only in the Modernist period, accelerating dramatically under Renzo Piano's Contemporary practice.<br/><br/><em style="color:var(--text-muted);font-size:13px;">Click any bubble to explore example buildings.</em></p>
+    </div>
+    <div class="section-header-right">
+      <div class="legend" id="bubble-legend"></div>
+    </div>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-panel-header">
+      <span class="chart-panel-title">Buildings by Era &amp; Type</span>
+      <span class="chart-panel-note">Bubble area ∝ count · hover for details · click to explore</span>
+    </div>
+    <div style="padding:24px 24px 16px;">
+      <div id="bubble-container"></div>
+    </div>
+  </div>
+  <div class="sample-panel" id="sample-panel">
+    <p class="sample-hint">Select a bubble above to see representative buildings from that period</p>
+  </div>
+</div>
+</section>
+
+<hr class="rule rule-strong">
+
+<!-- S2 SMALL MULTIPLES -->
+<section class="section section-alt" id="s2" data-nav="s2">
+<div class="max-w">
+  <div class="section-header full">
+    <div>
+      <span class="eyebrow">02 — Period Profiles</span>
+      <h2 class="section-title">A Typological Portrait of Each Era</h2>
+      <p class="section-body">Each panel shows the full typological breakdown of one historical period. Renaissance practice is almost exclusively residential; the Baroque is defined by religious commissions; by the Contemporary era, the profile is radically more diverse.</p>
+    </div>
+  </div>
+  <div class="small-multiples" id="small-multiples"></div>
+</div>
+</section>
+
+<hr class="rule">
+
+<!-- S3 SANKEY -->
+<section class="section section-dark" id="s3" data-nav="s3">
+<div class="max-w">
+  <div class="section-header">
+    <div>
+      <span class="eyebrow">03 — Architect → Country → Type</span>
+      <h2 class="section-title">How Each Master Mapped the World</h2>
+      <p class="section-body">Each flow traces an architect's output through geography into building type. Palladio's ribbon barely leaves Italy; Renzo Piano's branches reach six countries and seven typologies. The contrast between these two endpoints is the dataset's central argument.</p>
+    </div>
+    <div class="section-header-right">
+      <div class="legend" id="sankey-legend"></div>
+    </div>
+  </div>
+  <div id="sankey-container"></div>
+</div>
+</section>
+
+<hr class="rule">
+
+<!-- S4 COUNTRY -->
+<section class="section" id="s4" data-nav="s4">
+<div class="max-w">
+  <span class="eyebrow">04 — Geographic Concentration</span>
+  <h2 class="section-title">The Weight of Italy</h2>
+  <div class="country-grid">
+    <div>
+      <div class="country-insight">
+        <div class="country-insight-title">65% of all buildings are in Italy.</div>
+        <p>Three of the six architects — Palladio, Borromini, Vanvitelli — built almost exclusively within Italian borders. <strong>Carlo Rossi</strong> is the dataset's most striking exception: Italian-born, he constructed his entire career in St. Petersburg, making Russia the second most represented country. Only <strong>Renzo Piano</strong> escapes national gravity altogether.</p>
+      </div>
+      <div id="country-bars"></div>
+    </div>
+    <div>
+      <div class="chart-panel">
+        <div class="chart-panel-header">
+          <span class="chart-panel-title">Country breakdown by architect</span>
+        </div>
+        <div style="padding:16px;"><div id="country-arch-chart"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="rule rule-strong">
+
+<!-- S5 DIVERSITY -->
+<section class="section section-alt" id="s5" data-nav="s5">
+<div class="max-w">
+  <div class="section-header full">
+    <div>
+      <span class="eyebrow">05 — Typological Diversity</span>
+      <h2 class="section-title">The Widening Program</h2>
+      <p class="section-body">The number of distinct building types an era engages with rises steadily over time. Renaissance architects worked across 5 types; Contemporary architects span 7. Each ring represents the type distribution within a single period — the centre number shows how many distinct types appear.</p>
+    </div>
+  </div>
+  <div class="diversity-grid" id="diversity-grid"></div>
+</div>
+</section>
+
+<hr class="rule">
+
+<!-- S6 FINDINGS -->
+<section class="section section-dark" id="s6" data-nav="s6">
+<div class="max-w">
+  <span class="eyebrow">06 — Key Findings</span>
+  <h2 class="section-title">What the Data Reveals</h2>
+  <p class="section-body">Three structural patterns emerge — each with implications beyond this specific selection of architects.</p>
+  <div class="findings-grid">
+    <div class="finding-card">
+      <div class="finding-num">84→20%</div>
+      <div class="finding-label">Residential Share</div>
+      <div class="finding-desc">The residential typology drops from 84% of Renaissance output to 20% in the Contemporary period. The private patron has been replaced by the institution.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">1→6</div>
+      <div class="finding-label">Countries Reached</div>
+      <div class="finding-desc">Andrea Palladio worked in a single country. Renzo Piano's work spans six. Architectural practice became a globally mobile profession within a single dataset.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">22</div>
+      <div class="finding-label">Cultural buildings (Contemporary)</div>
+      <div class="finding-desc">Cultural institutions represent 40% of Contemporary output. The museum has become the paradigmatic building type of the late 20th century.</div>
+    </div>
+  </div>
+  <div class="reflection-grid">
+    <div class="reflection-block">
+      <div class="reflection-block-label">Narrative</div>
+      <p>This dataset was selected to represent a cross-section of Italian architectural heritage, but the picture that emerges is less about style and more about the changing nature of patronage. Early modern architects served the church and the aristocracy. Contemporary architects serve democratic institutions, corporations, and urban publics.</p>
+      <p>The shift from religious to cultural production tracks a well-documented secularization of public life — the museum replacing the cathedral as the site of civic ritual.</p>
+    </div>
+    <div class="reflection-block">
+      <div class="reflection-block-label">Unexpected Patterns</div>
+      <p>The most surprising finding is the near-total absence of healthcare and education buildings across pre-20th-century periods. These typologies, central to contemporary urban life, appear only at the edges of this dataset — suggesting that architecture's role in social infrastructure is itself a modern invention.</p>
+      <p>The geographic concentration in Italy reflects the persistence of a specific commissioning culture where local governments and religious institutions remain the most active architectural patrons — even across centuries.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="max-w">
+  <div class="footer-inner">
+    <div class="footer-left">Data source: Wikipedia (scraped &amp; cleaned) · 211 buildings across 7 historical periods<br/>Visualization built with D3.js v7 · Fonts: Instrument Serif, Manrope, Space Grotesk</div>
+    <div class="footer-right">MBL549E<br/>Group B · 2026</div>
+  </div>
+</div>
+</footer>
+
+<script>
+/* DATA */
+const bubbleData=[
+  {period_rank:0,period_name:"Renaissance",building_type_group:"commercial/office",count:1},
+  {period_rank:0,period_name:"Renaissance",building_type_group:"cultural",count:1},
+  {period_rank:0,period_name:"Renaissance",building_type_group:"infrastructure",count:3},
+  {period_rank:0,period_name:"Renaissance",building_type_group:"religious",count:3},
+  {period_rank:0,period_name:"Renaissance",building_type_group:"residential",count:41},
+  {period_rank:1,period_name:"Baroque",building_type_group:"education",count:1},
+  {period_rank:1,period_name:"Baroque",building_type_group:"healthcare",count:1},
+  {period_rank:1,period_name:"Baroque",building_type_group:"religious",count:19},
+  {period_rank:1,period_name:"Baroque",building_type_group:"residential",count:8},
+  {period_rank:2,period_name:"Late Baroque",building_type_group:"religious",count:20},
+  {period_rank:3,period_name:"Neoclassical I",building_type_group:"cultural",count:1},
+  {period_rank:3,period_name:"Neoclassical I",building_type_group:"infrastructure",count:2},
+  {period_rank:3,period_name:"Neoclassical I",building_type_group:"religious",count:5},
+  {period_rank:3,period_name:"Neoclassical I",building_type_group:"residential",count:7},
+  {period_rank:4,period_name:"Neoclassical II",building_type_group:"cultural",count:4},
+  {period_rank:4,period_name:"Neoclassical II",building_type_group:"education",count:1},
+  {period_rank:4,period_name:"Neoclassical II",building_type_group:"infrastructure",count:3},
+  {period_rank:4,period_name:"Neoclassical II",building_type_group:"religious",count:3},
+  {period_rank:4,period_name:"Neoclassical II",building_type_group:"residential",count:9},
+  {period_rank:5,period_name:"Modernist",building_type_group:"commercial/office",count:7},
+  {period_rank:5,period_name:"Modernist",building_type_group:"cultural",count:2},
+  {period_rank:5,period_name:"Modernist",building_type_group:"infrastructure",count:4},
+  {period_rank:5,period_name:"Modernist",building_type_group:"religious",count:2},
+  {period_rank:5,period_name:"Modernist",building_type_group:"residential",count:1},
+  {period_rank:5,period_name:"Modernist",building_type_group:"sports/leisure",count:7},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"commercial/office",count:5},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"cultural",count:22},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"education",count:5},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"infrastructure",count:10},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"public/civic",count:1},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"religious",count:1},
+  {period_rank:6,period_name:"Contemporary",building_type_group:"residential",count:11}
+];
+const samples={
+  "0":[{title:"Palladian Villas of the Veneto",url:"https://en.wikipedia.org/wiki/City_of_Vicenza_and_the_Palladian_Villas_of_the_Veneto",building_type_group:"residential",country_top:"Italy"},{title:"Basilica Palladiana",url:"https://en.wikipedia.org/wiki/Basilica_Palladiana",building_type_group:"religious",country_top:"Italy"},{title:"Casa Cogollo",url:"https://en.wikipedia.org/wiki/Casa_Cogollo",building_type_group:"residential",country_top:"Italy"}],
+  "1":[{title:"Sant'Andrea della Valle",url:"https://en.wikipedia.org/wiki/Sant%27Andrea_della_Valle",building_type_group:"religious",country_top:"Italy"},{title:"Cerasi Chapel",url:"https://en.wikipedia.org/wiki/Cerasi_Chapel",building_type_group:"religious",country_top:"Italy"},{title:"San Giovanni dei Fiorentini",url:"https://en.wikipedia.org/wiki/San_Giovanni_dei_Fiorentini",building_type_group:"religious",country_top:"Italy"}],
+  "2":[{title:"Santa Chiara, Turin",url:"https://en.wikipedia.org/wiki/Santa_Chiara,_Turin",building_type_group:"religious",country_top:"Italy"},{title:"Confraternita di Santa Croce",url:"https://en.wikipedia.org/wiki/Confraternita_di_Santa_Croce,_Villanova_Mondov%C3%AC",building_type_group:"religious",country_top:"Italy"},{title:"San Gaudenzio, Ivrea",url:"https://en.wikipedia.org/wiki/San_Gaudenzio,_Ivrea",building_type_group:"religious",country_top:"Italy"}],
+  "3":[{title:"Sant'Agostino, Rome",url:"https://en.wikipedia.org/wiki/Sant%27Agostino,_Rome",building_type_group:"religious",country_top:"Italy"},{title:"Aqueduct of Vanvitelli",url:"https://en.wikipedia.org/wiki/Aqueduct_of_Vanvitelli",building_type_group:"infrastructure",country_top:"Italy"},{title:"Palace of Caserta",url:"https://en.wikipedia.org/wiki/Palace_of_Caserta",building_type_group:"residential",country_top:"Italy"}],
+  "4":[{title:"Alexandrinsky Theatre",url:"https://en.wikipedia.org/wiki/Alexandrinsky_Theatre",building_type_group:"cultural",country_top:"Russia"},{title:"Anichkov Palace",url:"https://en.wikipedia.org/wiki/Anichkov_Palace",building_type_group:"residential",country_top:"Russia"},{title:"2 Rossi Street",url:"https://en.wikipedia.org/wiki/2_Rossi_Street",building_type_group:"infrastructure",country_top:"Russia"}],
+  "5":[{title:"Pirelli Tower",url:"https://en.wikipedia.org/wiki/Pirelli_Tower",building_type_group:"commercial/office",country_top:"Italy"},{title:"Palazzo del Lavoro",url:"https://en.wikipedia.org/wiki/Palazzo_del_Lavoro",building_type_group:"sports/leisure",country_top:"Italy"},{title:"Australia Square",url:"https://en.wikipedia.org/wiki/Australia_Square",building_type_group:"commercial/office",country_top:"other"}],
+  "6":[{title:"Academy Museum of Motion Pictures",url:"https://en.wikipedia.org/wiki/Academy_Museum_of_Motion_Pictures",building_type_group:"cultural",country_top:"United States"},{title:"565 Broome Street",url:"https://en.wikipedia.org/wiki/565_Broome_Street",building_type_group:"residential",country_top:"United States"},{title:"The Shard",url:"https://en.wikipedia.org/wiki/The_Shard",building_type_group:"commercial/office",country_top:"United Kingdom"}]
+};
+const sankeyArchCountry=[
+  {architect_label:"Andrea Palladio\n(Renaissance)",country_top:"Italy",value:48},
+  {architect_label:"Bernardo A. Vittone\n(Late Baroque)",country_top:"Italy",value:17},
+  {architect_label:"Bernardo A. Vittone\n(Late Baroque)",country_top:"Russia",value:3},
+  {architect_label:"Carlo Rossi\n(Neoclassical)",country_top:"Italy",value:2},
+  {architect_label:"Carlo Rossi\n(Neoclassical)",country_top:"Russia",value:17},
+  {architect_label:"Luigi Vanvitelli\n(Neoclassical)",country_top:"Italy",value:13},
+  {architect_label:"Pier Luigi Nervi\n(Modernist)",country_top:"France",value:2},
+  {architect_label:"Pier Luigi Nervi\n(Modernist)",country_top:"Italy",value:13},
+  {architect_label:"Pier Luigi Nervi\n(Modernist)",country_top:"United States",value:4},
+  {architect_label:"Pier Luigi Nervi\n(Modernist)",country_top:"other",value:3},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"France",value:7},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"Germany",value:3},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"Italy",value:15},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"Switzerland",value:2},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"United Kingdom",value:3},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"United States",value:15},
+  {architect_label:"Renzo Piano\n(Contemporary)",country_top:"other",value:10}
+];
+const sankeyCountryType=[
+  {country_top:"France",building_type_group:"commercial/office",value:3},
+  {country_top:"France",building_type_group:"cultural",value:3},
+  {country_top:"France",building_type_group:"education",value:2},
+  {country_top:"France",building_type_group:"residential",value:1},
+  {country_top:"Germany",building_type_group:"commercial/office",value:1},
+  {country_top:"Germany",building_type_group:"education",value:1},
+  {country_top:"Germany",building_type_group:"residential",value:1},
+  {country_top:"Italy",building_type_group:"commercial/office",value:4},
+  {country_top:"Italy",building_type_group:"cultural",value:6},
+  {country_top:"Italy",building_type_group:"infrastructure",value:14},
+  {country_top:"Italy",building_type_group:"religious",value:27},
+  {country_top:"Italy",building_type_group:"residential",value:51},
+  {country_top:"Italy",building_type_group:"sports/leisure",value:6},
+  {country_top:"Russia",building_type_group:"cultural",value:4},
+  {country_top:"Russia",building_type_group:"infrastructure",value:2},
+  {country_top:"Russia",building_type_group:"religious",value:4},
+  {country_top:"Russia",building_type_group:"residential",value:9},
+  {country_top:"United States",building_type_group:"commercial/office",value:1},
+  {country_top:"United States",building_type_group:"cultural",value:9},
+  {country_top:"United States",building_type_group:"education",value:2},
+  {country_top:"United States",building_type_group:"infrastructure",value:2},
+  {country_top:"United States",building_type_group:"residential",value:2},
+  {country_top:"other",building_type_group:"commercial/office",value:3},
+  {country_top:"other",building_type_group:"cultural",value:5},
+  {country_top:"other",building_type_group:"infrastructure",value:3},
+  {country_top:"other",building_type_group:"residential",value:2}
+];
+const countryData=[
+  {country:"Italy",count:137},{country:"Russia",count:20},{country:"United States",count:19},
+  {country:"other",count:15},{country:"France",count:9},{country:"Germany",count:3},
+  {country:"United Kingdom",count:3},{country:"Switzerland",count:2}
+];
+const periodDates={"Renaissance":"1508–1580","Baroque":"1600s","Late Baroque":"1702–1770","Neoclassical I":"1700–1773","Neoclassical II":"1775–1849","Modernist":"1891–1979","Contemporary":"1937–"};
+
+/* COLORS */
+const typeColors={"residential":"#D85C4A","religious":"#C96A2B","cultural":"#E07A8E","infrastructure":"#B07850","commercial/office":"#C46080","education":"#D4945A","sports/leisure":"#A87060","public/civic":"#E09880","healthcare":"#C08878"};
+const archColors={"Andrea Palladio":"#D85C4A","Bernardo A. Vittone":"#C96A2B","Carlo Rossi":"#E07A8E","Luigi Vanvitelli":"#B07850","Pier Luigi Nervi":"#C46080","Renzo Piano":"#D4945A"};
+const countryColors={"Italy":"#D85C4A","Russia":"#E07A8E","United States":"#C96A2B","France":"#D4945A","Germany":"#C46080","United Kingdom":"#B07850","Switzerland":"#A87060","other":"#B89888","unknown":"#A08880"};
+function cleanArch(s){return s.split('\n')[0].trim();}
+
+/* TOOLTIP */
+const gTT=document.getElementById('g-tt');
+function showTT(e,html){gTT.innerHTML=html;gTT.style.opacity=1;moveTT(e);}
+function moveTT(e){gTT.style.left=(e.clientX+14)+'px';gTT.style.top=(e.clientY-8)+'px';}
+function hideTT(){gTT.style.opacity=0;}
+
+/* LEGEND */
+function buildLegend(id,map){
+  const el=document.getElementById(id);
+  Object.entries(map).forEach(([lbl,col])=>{
+    const item=document.createElement('div');item.className='legend-item';
+    item.innerHTML=`<div class="legend-swatch" style="background:${col}"></div><span class="legend-label">${lbl}</span>`;
+    el.appendChild(item);});
+}
+buildLegend('bubble-legend',typeColors);
+buildLegend('sankey-legend',archColors);
+
+/* 1. BUBBLE CHART */
+(function(){
+  const cont=document.getElementById('bubble-container');
+  const W=Math.min(cont.offsetWidth||1060,1060),H=390;
+  const M={top:32,right:20,bottom:62,left:130};
+  const iW=W-M.left-M.right,iH=H-M.top-M.bottom;
+  const periods=["Renaissance","Baroque","Late Baroque","Neoclassical I","Neoclassical II","Modernist","Contemporary"];
+  const types=Object.keys(typeColors);
+  const xSc=d3.scalePoint().domain(periods).range([0,iW]).padding(0.5);
+  const ySc=d3.scalePoint().domain(types).range([0,iH]).padding(0.5);
+  const rSc=d3.scaleSqrt().domain([0,51]).range([3,40]);
+  const svg=d3.select(cont).append('svg').attr('width',W).attr('height',H);
+  const g=svg.append('g').attr('transform',`translate(${M.left},${M.top})`);
+  types.forEach(t=>{g.append('line').attr('x1',0).attr('x2',iW).attr('y1',ySc(t)).attr('y2',ySc(t)).attr('stroke','#EED8D2').attr('stroke-width',1).attr('stroke-dasharray','3,4');});
+  types.forEach(t=>{g.append('text').attr('x',-12).attr('y',ySc(t)).attr('text-anchor','end').attr('dominant-baseline','middle').attr('font-family','Space Grotesk,sans-serif').attr('font-size',10).attr('fill','#B09090').text(t);});
+  periods.forEach((p,i)=>{
+    if(i%2===0){g.append('rect').attr('x',xSc(p)-(iW/periods.length)*0.38).attr('y',-M.top+8).attr('width',(iW/periods.length)*0.76).attr('height',iH+M.top-8).attr('fill','rgba(216,92,74,0.025)').attr('rx',2);}
+    g.append('text').attr('x',xSc(p)).attr('y',iH+18).attr('text-anchor','middle').attr('font-family','Space Grotesk,sans-serif').attr('font-size',10).attr('font-weight',500).attr('fill','#D85C4A').text(p);
+    g.append('text').attr('x',xSc(p)).attr('y',iH+32).attr('text-anchor','middle').attr('font-family','Manrope,sans-serif').attr('font-size',9).attr('fill','#C0A8A4').text(periodDates[p]||'');
+  });
+  g.selectAll('circle').data(bubbleData).join('circle')
+    .attr('cx',d=>xSc(d.period_name)).attr('cy',d=>ySc(d.building_type_group)).attr('r',0)
+    .attr('fill',d=>typeColors[d.building_type_group]||'#B09090').attr('fill-opacity',0.7)
+    .attr('stroke',d=>typeColors[d.building_type_group]||'#B09090').attr('stroke-width',1.5).attr('stroke-opacity',0.4)
+    .style('cursor','pointer')
+    .on('mouseenter',function(e,d){d3.select(this).attr('fill-opacity',0.92).attr('r',rSc(d.count)*1.1);showTT(e,`<strong>${d.count} buildings</strong><br/>${d.building_type_group}<br/><span style="opacity:0.5">${d.period_name}</span>`);})
+    .on('mousemove',moveTT)
+    .on('mouseleave',function(e,d){d3.select(this).attr('fill-opacity',0.7).attr('r',rSc(d.count));hideTT();})
+    .on('click',function(e,d){
+      svg.selectAll('circle').attr('stroke-opacity',0.12).attr('fill-opacity',0.25);
+      d3.select(this).attr('stroke-opacity',1).attr('fill-opacity',1).attr('stroke-width',2.5);
+      const panel=document.getElementById('sample-panel');
+      const list=samples[d.period_rank]||[];
+      panel.innerHTML=list.map(b=>`<a href="${b.url}" target="_blank" class="sample-card"><div class="sample-card-type">${b.building_type_group}</div><div class="sample-card-title">${b.title}</div><div class="sample-card-country">${b.country_top}</div></a>`).join('');
+    })
+    .transition().delay((d,i)=>i*25).duration(700).ease(d3.easeCubicOut).attr('r',d=>rSc(d.count));
+})();
+
+/* 2. SMALL MULTIPLES */
+(function(){
+  const cont=document.getElementById('small-multiples');
+  const periods=["Renaissance","Baroque","Late Baroque","Neoclassical I","Neoclassical II","Modernist","Contemporary"];
+  const ptotals={};const pbytype={};
+  periods.forEach(p=>{ptotals[p]=0;pbytype[p]={};});
+  bubbleData.forEach(d=>{ptotals[d.period_name]=(ptotals[d.period_name]||0)+d.count;pbytype[d.period_name][d.building_type_group]=d.count;});
+  periods.forEach(p=>{
+    const total=ptotals[p]||0;
+    const sorted=Object.entries(pbytype[p]||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const shortP=p.length>11?p.slice(0,10)+'…':p;
+    const cell=document.createElement('div');cell.className='sm-cell';
+    cell.innerHTML=`<div class="sm-period">${shortP}</div><div class="sm-dates">${periodDates[p]||''}</div><div class="sm-total">${total}</div>`
+      +sorted.map(([type,count])=>`<div class="sm-bar-row"><span class="sm-bar-label">${type}</span><div class="sm-bar-track"><div class="sm-bar-fill" style="width:${(count/total*100).toFixed(0)}%;background:${typeColors[type]||'#B09090'}"></div></div><span class="sm-bar-num">${count}</span></div>`).join('');
+    cont.appendChild(cell);
+  });
+})();
+
+/* 3. SANKEY */
+(function(){
+  const cont=document.getElementById('sankey-container');
+  const W=cont.offsetWidth||1060,H=560;
+  const pad={top:44,right:160,bottom:24,left:210};
+  const svg=d3.select(cont).append('svg').attr('width',W).attr('height',H);
+  const g=svg.append('g');
+  const archNames=[...new Set(sankeyArchCountry.map(d=>d.architect_label))];
+  const countryNames=[...new Set([...sankeyArchCountry.map(d=>d.country_top),...sankeyCountryType.map(d=>d.country_top)])];
+  const typeNames=[...new Set(sankeyCountryType.map(d=>d.building_type_group))];
+  const archTot={};archNames.forEach(a=>{archTot[a]=sankeyArchCountry.filter(d=>d.architect_label===a).reduce((s,d)=>s+d.value,0);});
+  const cntTot={};countryNames.forEach(c=>{cntTot[c]=sankeyArchCountry.filter(d=>d.country_top===c).reduce((s,d)=>s+d.value,0);});
+  const typTot={};typeNames.forEach(t=>{typTot[t]=sankeyCountryType.filter(d=>d.building_type_group===t).reduce((s,d)=>s+d.value,0);});
+  const iH=H-pad.top-pad.bottom,colW=(W-pad.left-pad.right)/2,nH=20,nGap=10;
+  function layoutCol(items,totals,col){
+    const sorted=[...items].sort((a,b)=>(totals[b]||0)-(totals[a]||0));
+    const totalH=sorted.length*(nH+nGap)-nGap;
+    let y=pad.top+(iH-totalH)/2;
+    return sorted.map(name=>{const node={name,x:pad.left+col*colW,y,h:nH,total:totals[name]||0};y+=nH+nGap;return node;});
+  }
+  const archNodes=layoutCol(archNames,archTot,0);
+  const cntNodes=layoutCol(countryNames,cntTot,1);
+  const typeNodes=layoutCol(typeNames,typTot,2).map(n=>({...n,x:W-pad.right}));
+  const nodeMap={};[...archNodes,...cntNodes,...typeNodes].forEach(n=>{nodeMap[n.name]=n;});
+  const aOff={},ciOff={},coOff={},tOff={};
+  archNodes.forEach(n=>{aOff[n.name]=n.y;});cntNodes.forEach(n=>{ciOff[n.name]=n.y;coOff[n.name]=n.y;});typeNodes.forEach(n=>{tOff[n.name]=n.y;});
+  const sTT=document.getElementById('s-tt');
+  function drawFlows(flows,srcKey,tgtKey,srcTot,tgtTot,sOff,tOffMap,colorFn){
+    flows.forEach(d=>{
+      const src=nodeMap[d[srcKey]];const tgt=nodeMap[d[tgtKey]];if(!src||!tgt)return;
+      const lh=Math.max(2,(d.value/(srcTot[d[srcKey]]||1))*src.h);
+      const rh=Math.max(2,(d.value/(tgtTot[d[tgtKey]]||1))*tgt.h);
+      const x0=src.x+8,x1=tgt.x,y0=sOff[d[srcKey]],y1=tOffMap[d[tgtKey]];
+      sOff[d[srcKey]]+=lh;tOffMap[d[tgtKey]]+=rh;
+      const mx=(x0+x1)/2;
+      g.append('path')
+        .attr('d',`M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1} L${x1},${y1+rh} C${mx},${y1+rh} ${mx},${y0+lh} ${x0},${y0+lh} Z`)
+        .attr('fill',colorFn(d)).attr('fill-opacity',0.18)
+        .attr('stroke',colorFn(d)).attr('stroke-width',0.5).attr('stroke-opacity',0.35)
+        .style('cursor','pointer')
+        .on('mouseenter',function(e){d3.select(this).attr('fill-opacity',0.48).attr('stroke-opacity',0.7);
+          const lbl=srcKey==='architect_label'?`<strong>${cleanArch(d[srcKey])}</strong> → ${d[tgtKey]}<br/>${d.value} buildings`:`<strong>${d[srcKey]}</strong> → ${d[tgtKey]}<br/>${d.value} buildings`;
+          sTT.innerHTML=lbl;sTT.style.opacity=1;sTT.style.left=(e.clientX+14)+'px';sTT.style.top=(e.clientY-10)+'px';})
+        .on('mousemove',e=>{sTT.style.left=(e.clientX+14)+'px';sTT.style.top=(e.clientY-10)+'px';})
+        .on('mouseleave',function(){d3.select(this).attr('fill-opacity',0.18).attr('stroke-opacity',0.35);sTT.style.opacity=0;});
+    });
+  }
+  drawFlows(sankeyArchCountry,'architect_label','country_top',archTot,cntTot,aOff,ciOff,d=>archColors[cleanArch(d.architect_label)]||'#D85C4A');
+  drawFlows(sankeyCountryType,'country_top','building_type_group',cntTot,typTot,coOff,tOff,d=>countryColors[d.country_top]||'#B09090');
+  function drawNodes(nodes,colorFn,labelLeft,labelFn){
+    nodes.forEach(n=>{
+      g.append('rect').attr('x',n.x).attr('y',n.y).attr('width',8).attr('height',n.h).attr('fill',colorFn(n.name)).attr('rx',2).attr('opacity',0.9);
+      g.append('text').attr('x',labelLeft?n.x-14:n.x+16).attr('y',n.y+n.h/2).attr('text-anchor',labelLeft?'end':'start').attr('dominant-baseline','middle').attr('font-family','Space Grotesk,sans-serif').attr('font-size',10.5).attr('fill','rgba(246,237,232,0.62)').text(labelFn?labelFn(n.name):n.name);
+    });
+  }
+  drawNodes(archNodes,n=>archColors[cleanArch(n)]||'#D85C4A',true,n=>cleanArch(n));
+  drawNodes(cntNodes,n=>countryColors[n]||'#B09090',false,null);
+  drawNodes(typeNodes,n=>typeColors[n]||'#B09090',false,null);
+  [{x:pad.left+4,label:'ARCHITECT'},{x:pad.left+colW+4,label:'COUNTRY'},{x:W-pad.right+4,label:'TYPE'}].forEach(h=>{
+    svg.append('text').attr('x',h.x).attr('y',22).attr('font-family','Space Grotesk,sans-serif').attr('font-size',9).attr('font-weight',500).attr('letter-spacing',2).attr('fill','rgba(246,237,232,0.28)').text(h.label);
+  });
+})();
+
+/* 4. COUNTRY BARS */
+(function(){
+  const cont=document.getElementById('country-bars');
+  const total=countryData.reduce((s,d)=>s+d.count,0);
+  const max=countryData[0].count;
+  countryData.filter(d=>d.country!=='unknown').forEach(d=>{
+    const pct=(d.count/total*100).toFixed(0);
+    const barPct=(d.count/max*100).toFixed(1);
+    const row=document.createElement('div');row.className='country-bar-row';
+    row.innerHTML=`<span class="country-bar-label">${d.country}</span><div class="country-bar-track"><div class="country-bar-fill" style="width:0%;background:${countryColors[d.country]||'#B09090'}" data-target="${barPct}"></div></div><span class="country-bar-num">${d.count}</span><span class="country-pct">${pct}%</span>`;
+    cont.appendChild(row);
+  });
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){cont.querySelectorAll('.country-bar-fill').forEach(f=>{f.style.width=f.dataset.target+'%';});obs.disconnect();}});},{threshold:0.3});
+  obs.observe(cont);
+})();
+
+/* 5. COUNTRY × ARCHITECT STACKED BAR */
+(function(){
+  const cont=document.getElementById('country-arch-chart');
+  const W=cont.offsetWidth||420,H=280;
+  const M={top:12,right:16,bottom:36,left:104};
+  const iW=W-M.left-M.right,iH=H-M.top-M.bottom;
+  const archNames=[...new Set(sankeyArchCountry.map(d=>cleanArch(d.architect_label)))];
+  const countries=[...new Set(sankeyArchCountry.map(d=>d.country_top))].filter(c=>c!=='unknown');
+  const data=countries.map(c=>{
+    const row={country:c};let total=0;
+    archNames.forEach(a=>{const found=sankeyArchCountry.find(d=>cleanArch(d.architect_label)===a&&d.country_top===c);row[a]=found?found.value:0;total+=row[a];});
+    row.total=total;return row;
+  }).filter(d=>d.total>0).sort((a,b)=>b.total-a.total);
+  const svg=d3.select(cont).append('svg').attr('width',W).attr('height',H);
+  const g=svg.append('g').attr('transform',`translate(${M.left},${M.top})`);
+  const ySc=d3.scaleBand().domain(data.map(d=>d.country)).range([0,iH]).padding(0.35);
+  const xSc=d3.scaleLinear().domain([0,d3.max(data,d=>d.total)]).range([0,iW]);
+  g.append('g').call(d3.axisLeft(ySc).tickSize(0).tickPadding(10)).call(ax=>ax.select('.domain').remove()).call(ax=>ax.selectAll('text').attr('font-family','Space Grotesk,sans-serif').attr('font-size',10.5).attr('fill','#7A6260'));
+  const stack=d3.stack().keys(archNames);const stacked=stack(data);
+  stacked.forEach((series,si)=>{
+    const aN=archNames[si];const color=Object.entries(archColors).find(([k])=>k===aN)?.[1]||'#B09090';
+    g.selectAll(`.b${si}`).data(series).join('rect')
+      .attr('y',d=>ySc(d.data.country)).attr('x',d=>xSc(d[0])).attr('width',d=>Math.max(0,xSc(d[1])-xSc(d[0]))).attr('height',ySc.bandwidth())
+      .attr('fill',color).attr('fill-opacity',0.82).attr('rx',1)
+      .on('mouseenter',function(e,d){const val=d[1]-d[0];if(val<=0)return;d3.select(this).attr('fill-opacity',1);showTT(e,`<strong>${aN}</strong><br/>${d.data.country}: ${val} buildings`);})
+      .on('mousemove',moveTT).on('mouseleave',function(){d3.select(this).attr('fill-opacity',0.82);hideTT();});
+  });
+  g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xSc).ticks(5).tickSize(-iH)).call(ax=>ax.select('.domain').remove()).call(ax=>ax.selectAll('line').attr('stroke','#EED8D2').attr('stroke-dasharray','2,3')).call(ax=>ax.selectAll('text').attr('font-family','Space Grotesk,sans-serif').attr('font-size',9).attr('fill','#B09090'));
+})();
+
+/* 6. DIVERSITY DONUTS */
+(function(){
+  const cont=document.getElementById('diversity-grid');
+  const periods=["Renaissance","Baroque","Late Baroque","Neoclassical I","Neoclassical II","Modernist","Contemporary"];
+  periods.forEach(p=>{
+    const typesIn=bubbleData.filter(d=>d.period_name===p);
+    const total=typesIn.reduce((s,d)=>s+d.count,0);
+    const typeCount=typesIn.length;
+    const col=document.createElement('div');col.className='diversity-col';
+    const shortP=p.split(' ')[0];
+    col.innerHTML=`<div class="diversity-label">${shortP}</div>`;
+    const r=36,cx=r+4,cy=r+4;
+    const svgEl=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svgEl.setAttribute('width',cx*2);svgEl.setAttribute('height',cy*2);svgEl.className='diversity-donut';
+    const pie=d3.pie().value(d=>d.count).sort(null)(typesIn);
+    const arc=d3.arc().innerRadius(r*0.58).outerRadius(r);
+    pie.forEach(slice=>{
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',arc({...slice}));
+      path.setAttribute('transform',`translate(${cx},${cy})`);
+      path.setAttribute('fill',typeColors[slice.data.building_type_group]||'#B09090');
+      path.setAttribute('fill-opacity','0.85');
+      path.setAttribute('stroke','#FFF8F5');path.setAttribute('stroke-width','1.5');
+      svgEl.appendChild(path);
+    });
+    const ct=document.createElementNS('http://www.w3.org/2000/svg','text');
+    ct.setAttribute('x',cx);ct.setAttribute('y',cy+1);ct.setAttribute('text-anchor','middle');ct.setAttribute('dominant-baseline','middle');ct.setAttribute('font-family','Instrument Serif,serif');ct.setAttribute('font-size','16');ct.setAttribute('fill','#2C1F1A');ct.textContent=typeCount;
+    svgEl.appendChild(ct);
+    col.appendChild(svgEl);
+    col.innerHTML+=`<div class="diversity-types-label">${typeCount} type${typeCount!==1?'s':''}</div><div style="font-size:11px;color:#B09090;margin-top:4px">${total} total</div>`;
+    cont.appendChild(col);
+  });
+})();
+
+/* PROGRESS NAV */
+(function(){
+  const sections=document.querySelectorAll('[data-nav]');
+  const dots=document.querySelectorAll('.progress-dot');
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){const id=e.target.dataset.nav;dots.forEach(d=>d.classList.toggle('active',d.dataset.section===id));}});},{threshold:0.4});
+  sections.forEach(s=>obs.observe(s));
+  dots.forEach(dot=>{dot.addEventListener('click',()=>{document.getElementById(dot.dataset.section)?.scrollIntoView({behavior:'smooth'});});});
+})();
+</script>
+</body>
+</html>

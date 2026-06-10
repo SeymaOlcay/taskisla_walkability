@@ -1,0 +1,16 @@
+{
+  "project": "MBL549E Case Study 2",
+  "data_source": [
+    "['https://en.wikipedia.org/wiki/Category:Renzo_Piano_buildings', 'https://en.wikipedia.org/wiki/Category:Carlo_Maderno_buildings', 'https://en.wikipedia.org/wiki/Category:Luigi_Vanvitelli_buildings', 'https://en.wikipedia.org/wiki/Category:Francesco_Borromini_buildings', 'https://en.wikipedia.org/wiki/Category:Carlo_Rossi_buildings_and_structures', 'https://en.wikipedia.org/wiki/Category:Bernardo_Antonio_Vittone_buildings', 'https://en.wikipedia.org/wiki/Category:Pier_Luigi_Nervi_buildings', 'https://en.wikipedia.org/wiki/Category:Andrea_Palladio_buildings']"
+  ],
+  "category_label": "[Renzo Piano, Carlo Maderno, Luigi Vanvitelli, Francesco Borromini, Carlo Rossi and structures, Bernardo Antonio Vittone, Pier Luigi Nervi, Andrea Palladio]",
+  "research_question": "Research Question: How are Italian architects' buildings (Renzo Piano, Carlo Maderno, Luigi Vanvitelli, Francesco Borromini, Carlo Rossi and structures, Bernardo Antonio Vittone, Pier Luigi Nervi, Andrea Palladio) distributed\ngeographically and by building type?",
+  "total_records": 211,
+  "scraping_date": "2026-03-04",
+  "rate_limit": "time.sleep(2) between every request + custom User-Agent header",
+  "group_members": [
+    "Merve Civcik - 523251015",
+    "Hamdi Çakır - 523241022",
+    "Şeyma Olcay - 523241023"
+  ]
+}

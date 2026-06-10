@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Expanding Ground — Map & Heatmap</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:        #FFF8F5;
+  --surface:   #FFFFFF;
+  --blush:     #F6E7E2;
+  --peach:     #F3C7C0;
+  --rule:      #E8D5CF;
+  --rose:      #D85C4A;
+  --coral:     #F08A6C;
+  --terra:     #C96A2B;
+  --pink:      #E78CA8;
+  --mocha:     #B85870;
+  --ink:       #2A1F1C;
+  --ink-70:    #5A4540;
+  --ink-40:    #8E6F6B;
+  --ink-20:    #BDA8A4;
+  --ink-10:    #E0D0CC;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  font-family: 'Manrope', sans-serif;
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.page-header {
+  background: var(--ink);
+  padding: 48px 64px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.page-header::after {
+  content: '';
+  position: absolute; top:0; left:0; right:0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rose), var(--coral), var(--pink));
+}
+.header-tag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--coral); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.header-tag::before { content:''; display:block; width:18px; height:1px; background:var(--coral); }
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(36px, 4vw, 58px);
+  color: #FFF8F5; line-height: 1.05;
+  margin-bottom: 10px;
+}
+.page-title em { font-style: italic; color: var(--coral); }
+.page-sub {
+  font-size: 13px; font-weight: 300;
+  color: var(--ink-20); max-width: 600px; line-height: 1.75;
+}
+
+/* ── TABS ── */
+.tab-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  display: flex; gap: 0;
+  padding: 0 64px;
+  position: sticky; top: 0; z-index: 50;
+}
+.tab {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-40);
+  padding: 14px 0; margin-right: 32px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+  user-select: none;
+}
+.tab:hover { color: var(--rose); }
+.tab.active { color: var(--rose); border-bottom-color: var(--rose); }
+
+/* ── CONTROLS ── */
+.controls {
+  background: var(--blush);
+  border-bottom: 1px solid var(--rule);
+  padding: 16px 64px;
+  display: flex; gap: 24px; flex-wrap: wrap; align-items: center;
+}
+.ctrl-group { display: flex; align-items: center; gap: 10px; }
+.ctrl-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink-40);
+}
+.ctrl-btn {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px; font-weight: 500;
+  padding: 5px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--ink-70);
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.ctrl-btn:hover { border-color: var(--coral); color: var(--rose); }
+.ctrl-btn.active { background: var(--rose); color: #fff; border-color: var(--rose); }
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── MAP SECTION ── */
+.map-wrap {
+  padding: 40px 64px;
+  max-width: 1400px; margin: 0 auto;
+}
+.section-intro {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; margin-bottom: 32px; align-items: end;
+}
+.section-tag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-tag::before { content:''; display:block; width:14px; height:1px; background:var(--rose); }
+.section-h {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(22px, 2.5vw, 32px);
+  line-height: 1.15; color: var(--ink);
+}
+.section-body {
+  font-size: 13px; font-weight: 300;
+  color: var(--ink-70); line-height: 1.85;
+}
+.section-body strong { font-weight: 600; color: var(--ink); }
+
+.chart-box {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.chart-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--rule);
+  background: #FDFAF8;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chart-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-40);
+}
+.chart-note {
+  font-size: 10px; font-weight: 300;
+  color: var(--ink-20); font-style: italic;
+}
+
+/* ── MAP SVG ── */
+#map-svg { display: block; width: 100%; }
+.country-path { fill: #EDE0DA; stroke: #FFF8F5; stroke-width: .5; }
+.graticule { fill: none; stroke: #F0E4DF; stroke-width: .3; }
+.sphere { fill: #F9F0ED; }
+
+.map-dot {
+  cursor: pointer;
+  transition: r .15s;
+}
+.map-dot:hover { filter: brightness(1.2); }
+
+/* ── LEGEND (map) ── */
+.map-legend {
+  display: flex; flex-wrap: wrap;
+  gap: 10px 20px; padding: 14px 20px;
+  border-top: 1px solid var(--rule);
+}
+.leg-item { display: flex; align-items: center; gap: 7px; }
+.leg-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.leg-txt {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px; color: var(--ink-70);
+}
+
+/* ── INFO CARD (map click) ── */
+.info-card {
+  margin: 16px 0 0;
+  background: var(--blush);
+  border: 1px solid var(--peach);
+  border-radius: 3px;
+  padding: 18px 22px;
+  display: none;
+  grid-template-columns: auto 1fr;
+  gap: 16px; align-items: start;
+}
+.info-card.visible { display: grid; }
+.info-color-bar { width: 4px; border-radius: 2px; align-self: stretch; }
+.info-type {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 5px;
+}
+.info-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px; color: var(--ink);
+  margin-bottom: 4px;
+}
+.info-meta {
+  font-size: 12px; font-weight: 300;
+  color: var(--ink-40);
+}
+
+/* ── HEATMAP SECTION ── */
+.hm-wrap {
+  padding: 40px 64px;
+  max-width: 1400px; margin: 0 auto;
+}
+
+/* ── TOOLTIP ── */
+.tooltip {
+  position: fixed;
+  background: var(--ink);
+  color: #FFF8F5;
+  border-radius: 3px;
+  padding: 9px 13px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .12s;
+  z-index: 9999;
+  max-width: 200px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.18);
+}
+.tt-main { font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:600; color:var(--coral); }
+.tt-sub  { font-size:11px; font-weight:300; color:var(--ink-20); margin-top:3px; }
+
+/* ── FOOTER ── */
+.page-footer {
+  background: var(--ink); color: var(--ink-40);
+  padding: 32px 64px;
+  font-size: 11px; font-weight: 300; line-height: 1.8;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 24px;
+}
+.footer-note { font-style: italic; color: var(--ink-70); font-size: 12px; max-width: 500px; }
+.footer-credit { font-family:'Space Grotesk',sans-serif; font-size:9px; letter-spacing:.16em; color:var(--ink-70); text-align:right; line-height:1.9; }
+
+@media(max-width:800px){
+  .page-header,.map-wrap,.hm-wrap,.controls,.tab-bar,.page-footer{ padding-left:24px; padding-right:24px; }
+  .section-intro { grid-template-columns:1fr; gap:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="page-header">
+  <div class="header-tag">MBL549E · Case Study 4 · Supplementary Visualizations</div>
+  <h1 class="page-title">Where They <em>Built</em></h1>
+  <p class="page-sub">203 geolocated buildings mapped across five centuries — and a heatmap showing the typological concentration of each era. Two complementary views of the same dataset.</p>
+</header>
+
+<!-- ══ TABS ══ -->
+<nav class="tab-bar">
+  <div class="tab active" data-panel="map">🗺 World Map</div>
+  <div class="tab" data-panel="heatmap">◼ Heatmap</div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     PANEL: MAP
+══════════════════════════════════════ -->
+<div class="panel active" id="panel-map">
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Color by</span>
+      <button class="ctrl-btn active" data-color="architect">Architect</button>
+      <button class="ctrl-btn" data-color="type">Building type</button>
+      <button class="ctrl-btn" data-color="period">Era</button>
+    </div>
+    <div class="ctrl-group" style="margin-left:auto;">
+      <span class="ctrl-label">Filter era</span>
+      <button class="ctrl-btn era-btn active" data-era="all">All</button>
+      <button class="ctrl-btn era-btn" data-era="0">Renaissance</button>
+      <button class="ctrl-btn era-btn" data-era="1">Baroque</button>
+      <button class="ctrl-btn era-btn" data-era="2">Late Baroque</button>
+      <button class="ctrl-btn era-btn" data-era="3">Neoclassical I</button>
+      <button class="ctrl-btn era-btn" data-era="4">Neoclassical II</button>
+      <button class="ctrl-btn era-btn" data-era="5">Modernist</button>
+      <button class="ctrl-btn era-btn" data-era="6">Contemporary</button>
+    </div>
+  </div>
+
+  <div class="map-wrap">
+    <div class="section-intro">
+      <div>
+        <div class="section-tag">01 — Geographic Distribution</div>
+        <h2 class="section-h">The Gravity of Place</h2>
+      </div>
+      <p class="section-body">
+        203 buildings plotted at their exact coordinates. Toggle between coloring by <strong>architect</strong>, <strong>building type</strong>, or <strong>era</strong>, and filter to a single period to watch the geographic story change. Notice how switching from Renaissance to Contemporary transforms the map from a tight Italian cluster to a global scatter.
+      </p>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-header">
+        <span class="chart-title" id="map-chart-title">Colored by architect — 203 buildings</span>
+        <span class="chart-note">Click a dot to see details</span>
+      </div>
+      <svg id="map-svg"></svg>
+      <div class="map-legend" id="map-legend"></div>
+    </div>
+
+    <div class="info-card" id="info-card">
+      <div class="info-color-bar" id="info-bar"></div>
+      <div>
+        <div class="info-type" id="info-type"></div>
+        <div class="info-title" id="info-title"></div>
+        <div class="info-meta" id="info-meta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PANEL: HEATMAP
+══════════════════════════════════════ -->
+<div class="panel" id="panel-heatmap">
+  <div class="hm-wrap">
+    <div class="section-intro">
+      <div>
+        <div class="section-tag">02 — Era × Typology Intensity</div>
+        <h2 class="section-h">Where the Weight Fell</h2>
+      </div>
+      <p class="section-body">
+        Each cell shows how many buildings of that type were produced in that era. The color intensity encodes the count — the darker the cell, the more buildings. Read across a row to see a typology's history; read down a column to see an era's signature. The <strong>residential / Renaissance</strong> cell at top-left is the dataset's defining asymmetry.
+      </p>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-header">
+        <span class="chart-title">Building count per Era × Typology cell</span>
+        <span class="chart-note">Hover for exact count</span>
+      </div>
+      <div style="padding:24px 28px 20px;">
+        <svg id="hm-svg" style="display:block;width:100%;"></svg>
+      </div>
+    </div>
+
+    <!-- Row profiles below heatmap -->
+    <div style="margin-top:32px;">
+      <div class="section-tag" style="margin-bottom:16px;">Era fingerprints — dominant type per era</div>
+      <div id="era-profiles" style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOOLTIP ══ -->
+<div class="tooltip" id="g-tooltip">
+  <div class="tt-main" id="tt-main"></div>
+  <div class="tt-sub" id="tt-sub"></div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer class="page-footer">
+  <p class="footer-note">This file is a standalone supplementary visualization. Open in any browser — no server required. Built with D3.js v7.</p>
+  <div class="footer-credit">MBL549E · Group B · April 2026<br/>Data: Wikipedia · 211 buildings total · 203 geolocated</div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════ */
+const BUILDINGS = [{"title":"565 Broome Street","lat":40.72417,"lon":-74.00556,"country":"United States","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Academy Museum of Motion Pictures","lat":34.06333,"lon":-118.36083,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Accademia Nazionale di Santa Cecilia Musical Instruments Museum","lat":41.928931,"lon":12.474794,"country":"Italy","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Aquarium of Genoa","lat":44.4102889,"lon":8.9265472,"country":"Italy","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Art Institute of Chicago Building","lat":41.8796,"lon":-87.6237,"country":"United States","type":"education","period":6,"architect":"Renzo Piano"},{"title":"Astrup Fearnley Museum of Modern Art","lat":59.9075,"lon":10.74417,"country":"other","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Atrium Tower","lat":52.50607,"lon":13.37297,"country":"Germany","type":"commercial/office","period":6,"architect":"Renzo Piano"},{"title":"Aurora Place","lat":-33.8649694,"lon":151.2119528,"country":"other","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Beyeler Foundation","lat":47.5881,"lon":7.6511,"country":"Switzerland","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Biosphere (Genoa)","lat":44.40667,"lon":8.92306,"country":"Italy","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Brignole (Genoa Metro)","lat":44.407639,"lon":8.93444,"country":"Italy","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Brin (Genoa Metro)","lat":44.42806,"lon":8.89556,"country":"Italy","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"California Academy of Sciences","lat":37.7701,"lon":-122.4664,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Central Saint Giles","lat":51.516014,"lon":-0.127738,"country":"United Kingdom","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Centre Pompidou","lat":48.860642,"lon":2.352245,"country":"France","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Cité Internationale","lat":45.7849,"lon":4.8543,"country":"France","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"City Gate (Valletta)","lat":35.89611,"lon":14.50917,"country":"other","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"De Ferrari (Genoa Metro)","lat":44.407639,"lon":8.93444,"country":"Italy","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Dinegro (Genoa Metro)","lat":44.41389,"lon":8.91194,"country":"Italy","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Exelon Pavilions","lat":41.884075,"lon":-87.6223722,"country":"United States","type":"public/civic","period":6,"architect":"Renzo Piano"},{"title":"Fubon Art Museum","lat":25.0394,"lon":121.5711,"country":"other","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Fubon Life Tower","lat":25.03917,"lon":121.57,"country":"other","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Genoa-Saint George Bridge","lat":44.42583,"lon":8.88889,"country":"Italy","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Harvard Art Museums","lat":42.3742,"lon":-71.1147,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"High Museum of Art","lat":33.790047,"lon":-84.385566,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"IRCAM","lat":48.8598,"lon":2.3513,"country":"France","type":"education","period":6,"architect":"Renzo Piano"},{"title":"Jean-Marie Tjibaou Cultural Centre","lat":-22.25628,"lon":166.48193,"country":"France","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Kansai International Airport","lat":34.4306,"lon":135.2303,"country":"other","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Kimbell Art Museum","lat":32.7486,"lon":-97.365,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"KPN Tower","lat":51.907,"lon":4.489,"country":"other","type":"commercial/office","period":6,"architect":"Renzo Piano"},{"title":"Los Angeles County Museum of Art","lat":34.0633,"lon":-118.3592,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Maison Hermès","lat":35.671889,"lon":139.763278,"country":"other","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Menil Collection","lat":29.73722,"lon":-95.39861,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Morgan Library & Museum","lat":40.74917,"lon":-73.98139,"country":"United States","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Nasher Sculpture Center","lat":32.7882,"lon":-96.8002,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"NEMO (museum)","lat":52.3740806,"lon":4.91235,"country":"other","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"The New York Times Building","lat":40.75611,"lon":-73.99,"country":"United States","type":"commercial/office","period":6,"architect":"Renzo Piano"},{"title":"The News Building (London)","lat":51.5054,"lon":-0.0876,"country":"United Kingdom","type":"infrastructure","period":6,"architect":"Renzo Piano"},{"title":"Nichols Bridgeway","lat":41.880555,"lon":-87.62249,"country":"United States","type":"education","period":6,"architect":"Renzo Piano"},{"title":"Palais des congrès de Lyon","lat":45.78528,"lon":4.85806,"country":"France","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Parco della Musica","lat":41.929075,"lon":12.474557,"country":"Italy","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Parliament House (Malta)","lat":35.89611,"lon":14.50972,"country":"other","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Rocca di Frassinello","lat":42.9315167,"lon":10.9800806,"country":"Italy","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Sanctuary of Saint Pio of Pietrelcina","lat":41.7071222,"lon":15.703025,"country":"Italy","type":"religious","period":6,"architect":"Renzo Piano"},{"title":"The Shard","lat":51.5045,"lon":-0.0865,"country":"United Kingdom","type":"commercial/office","period":6,"architect":"Renzo Piano"},{"title":"Stadio San Nicola","lat":41.0847361,"lon":16.8400722,"country":"Italy","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Tribunal de Paris","lat":48.8553,"lon":2.3458,"country":"France","type":"education","period":6,"architect":"Renzo Piano"},{"title":"Vulcano Buono","lat":40.949761,"lon":14.48792,"country":"Italy","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Weltstadthaus (Cologne)","lat":50.9356417,"lon":6.9529861,"country":"Germany","type":"residential","period":6,"architect":"Renzo Piano"},{"title":"Whitney Museum","lat":40.7396,"lon":-74.0089,"country":"United States","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Zentrum Paul Klee","lat":46.94917,"lon":7.47389,"country":"Switzerland","type":"cultural","period":6,"architect":"Renzo Piano"},{"title":"Sant'Andrea della Valle","lat":41.89583,"lon":12.47444,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Cerasi Chapel","lat":41.911389,"lon":12.476389,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"San Giovanni dei Fiorentini","lat":41.8997,"lon":12.465,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Sant'Ignazio, Rome","lat":41.899,"lon":12.479778,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Santa Maria sopra Minerva","lat":41.89806,"lon":12.47833,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Palazzo Barberini","lat":41.90361,"lon":12.49028,"country":"Italy","type":"residential","period":1,"architect":"Carlo Maderno"},{"title":"Palazzo Mattei","lat":41.89403,"lon":12.47822,"country":"Italy","type":"residential","period":1,"architect":"Carlo Maderno"},{"title":"St. Peter's Basilica","lat":41.90222,"lon":12.45333,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"San Giacomo degli Incurabili","lat":41.90861,"lon":12.48083,"country":"Italy","type":"healthcare","period":1,"architect":"Carlo Maderno"},{"title":"San Giacomo in Augusta","lat":41.90778,"lon":12.47722,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Santa Maria della Vittoria, Rome","lat":41.90472,"lon":12.49417,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Santa Susanna, Rome","lat":41.90425,"lon":12.493639,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Trinità dei Monti","lat":41.90592,"lon":12.48364,"country":"Italy","type":"religious","period":1,"architect":"Carlo Maderno"},{"title":"Villa Aldobrandini","lat":41.803444,"lon":12.683028,"country":"Italy","type":"residential","period":1,"architect":"Carlo Maderno"},{"title":"Sant'Agostino, Rome","lat":41.90083,"lon":12.47417,"country":"Italy","type":"religious","period":3,"architect":"Luigi Vanvitelli"},{"title":"Sant'Agostino, Siena","lat":43.31444,"lon":11.33139,"country":"Italy","type":"religious","period":3,"architect":"Luigi Vanvitelli"},{"title":"Aqueduct of Vanvitelli","lat":41.05917,"lon":14.40167,"country":"Italy","type":"infrastructure","period":3,"architect":"Luigi Vanvitelli"},{"title":"Palazzo Compagnoni Marefoschi","lat":43.3005,"lon":13.455,"country":"Italy","type":"residential","period":3,"architect":"Luigi Vanvitelli"},{"title":"Igreja de São Roque","lat":38.71361,"lon":-9.14361,"country":"other","type":"religious","period":3,"architect":"Luigi Vanvitelli"},{"title":"Lazzaretto of Ancona","lat":43.61444,"lon":13.50361,"country":"Italy","type":"cultural","period":3,"architect":"Luigi Vanvitelli"},{"title":"Santa Maria degli Angeli e dei Martiri","lat":41.90306,"lon":12.49694,"country":"Italy","type":"infrastructure","period":3,"architect":"Luigi Vanvitelli"},{"title":"Royal Palace of Caserta","lat":41.07333,"lon":14.32639,"country":"Italy","type":"residential","period":3,"architect":"Luigi Vanvitelli"},{"title":"Palazzo della Loggia (Brescia)","lat":45.5399,"lon":10.2192,"country":"unknown","type":"residential","period":3,"architect":"Luigi Vanvitelli"},{"title":"Palazzo Doria d'Angri","lat":40.84687,"lon":14.249611,"country":"Italy","type":"residential","period":3,"architect":"Luigi Vanvitelli"},{"title":"Palazzo Poli","lat":41.90111,"lon":12.48306,"country":"Italy","type":"residential","period":3,"architect":"Luigi Vanvitelli"},{"title":"Santissima Annunziata Maggiore","lat":40.85119,"lon":14.26503,"country":"Italy","type":"religious","period":3,"architect":"Luigi Vanvitelli"},{"title":"Villa Rufinella","lat":41.8032972,"lon":12.6897528,"country":"Italy","type":"residential","period":3,"architect":"Luigi Vanvitelli"},{"title":"Sant'Agnese in Agone","lat":41.89877,"lon":12.4726,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Sant'Andrea delle Fratte","lat":41.9036,"lon":12.4836,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Palazzo Falconieri","lat":41.8948,"lon":12.4694,"country":"Italy","type":"education","period":1,"architect":"Francesco Borromini"},{"title":"San Giovanni dei Fiorentini","lat":41.8997,"lon":12.465,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Santa Maria dei Sette Dolori","lat":41.889944,"lon":12.466306,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Oratorio dei Filippini","lat":41.898228,"lon":12.46871,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Palazzo Barberini","lat":41.90361,"lon":12.49028,"country":"Italy","type":"residential","period":1,"architect":"Francesco Borromini"},{"title":"Palazzo Giustiniani, Rome","lat":41.8992056,"lon":12.4753472,"country":"Italy","type":"residential","period":1,"architect":"Francesco Borromini"},{"title":"Palazzo Spada","lat":41.894028,"lon":12.471806,"country":"Italy","type":"residential","period":1,"architect":"Francesco Borromini"},{"title":"Palazzo di Propaganda Fide","lat":41.904056,"lon":12.483778,"country":"Italy","type":"residential","period":1,"architect":"Francesco Borromini"},{"title":"San Carlo alle Quattro Fontane","lat":41.90181,"lon":12.49074,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"San Giovanni in Oleo","lat":41.876611,"lon":12.502139,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Sant'Ivo alla Sapienza","lat":41.898221,"lon":12.474734,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Santa Lucia in Selci","lat":41.894611,"lon":12.49639,"country":"Italy","type":"religious","period":1,"architect":"Francesco Borromini"},{"title":"Villa Falconieri","lat":41.8072139,"lon":12.6895417,"country":"Italy","type":"residential","period":1,"architect":"Francesco Borromini"},{"title":"2 Rossi Street","lat":59.930504,"lon":30.336015,"country":"Russia","type":"infrastructure","period":4,"architect":"Carlo Rossi"},{"title":"Alexandrinsky Theatre","lat":59.9318,"lon":30.3362,"country":"Russia","type":"cultural","period":4,"architect":"Carlo Rossi"},{"title":"Anichkov Palace","lat":59.93278,"lon":30.33972,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Arts Square","lat":59.9373,"lon":30.3317,"country":"Russia","type":"cultural","period":4,"architect":"Carlo Rossi"},{"title":"Ascension Convent","lat":55.7525,"lon":37.62028,"country":"Russia","type":"religious","period":4,"architect":"Carlo Rossi"},{"title":"General Staff Building","lat":59.9381,"lon":30.3172,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Maly Theatre (Moscow)","lat":55.75971,"lon":37.62054,"country":"Russia","type":"cultural","period":4,"architect":"Carlo Rossi"},{"title":"Michael Manege","lat":59.93639,"lon":30.33944,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Mikhailovsky Palace","lat":59.93861,"lon":30.33222,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Military Gallery of the Winter Palace","lat":59.94083,"lon":30.31444,"country":"Russia","type":"cultural","period":4,"architect":"Carlo Rossi"},{"title":"National Library of Russia","lat":59.93361,"lon":30.33556,"country":"Russia","type":"education","period":4,"architect":"Carlo Rossi"},{"title":"Oława Castle","lat":50.94417,"lon":17.29444,"country":"Italy","type":"religious","period":4,"architect":"Carlo Rossi"},{"title":"Palace Square","lat":59.93917,"lon":30.31583,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Rossi Bridge","lat":59.93889,"lon":30.33556,"country":"Russia","type":"infrastructure","period":4,"architect":"Carlo Rossi"},{"title":"Rossi Pavilion","lat":59.94083,"lon":30.33389,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"St. Peter and St. Paul's Cathedral, Tallinn","lat":59.4381,"lon":24.7488,"country":"other","type":"religious","period":4,"architect":"Carlo Rossi"},{"title":"Senate and Synod Building","lat":59.93583,"lon":30.30056,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Tauride Palace","lat":59.94778,"lon":30.37583,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Tripartite Bridge","lat":59.9417,"lon":30.3288,"country":"Italy","type":"infrastructure","period":4,"architect":"Carlo Rossi"},{"title":"Yelagin Palace","lat":59.9793,"lon":30.27,"country":"Russia","type":"residential","period":4,"architect":"Carlo Rossi"},{"title":"Santa Chiara, Turin","lat":45.075776,"lon":7.679298,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Confraternita di Santa Croce","lat":44.343997,"lon":7.755873,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"San Gaudenzio, Ivrea","lat":45.46215,"lon":7.87385,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"San Giovanni Vincenzo","lat":45.09919,"lon":7.35636,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santuario Sant'Ignazio","lat":45.27812,"lon":7.44141,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"San Luigi Gonzaga, Corteranzo","lat":45.1003,"lon":8.1196,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Maria Maddalena, Alba","lat":44.698416,"lon":8.034478,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Maria degli Angeli, Chivasso","lat":45.19018,"lon":7.88772,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Maria Assunta, Grignasco","lat":45.68548,"lon":8.33697,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Maria Maddalena, Foglizzo","lat":45.27462,"lon":7.82368,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Maria Maggiore, Racconigi","lat":44.766694,"lon":7.679306,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Maria della Neve","lat":45.01675,"lon":7.74969,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"San Michele Arcangelo, Borgo d'Ale","lat":45.34931,"lon":8.05329,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"San Michele Arcangelo, Rivarolo","lat":45.33326,"lon":7.72622,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Sacro Monte di Andorno","lat":45.6584,"lon":7.9935,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santa Chiara, Bra","lat":44.7001,"lon":7.8533,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Capella di Arciconfraternita","lat":44.78015,"lon":7.73906,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santissimo Salvatore, Borgomasino","lat":45.360987,"lon":7.988731,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Sanctuary of Valinotto","lat":44.88544,"lon":7.627328,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Santi Vincenzo e Anastasio, Cambiano","lat":44.9738,"lon":7.78003,"country":"Italy","type":"religious","period":2,"architect":"Bernardo Antonio Vittone"},{"title":"Australia Square","lat":-33.865,"lon":151.20778,"country":"other","type":"commercial/office","period":5,"architect":"Pier Luigi Nervi"},{"title":"Cathedral of Saint Mary (San Francisco)","lat":37.7842,"lon":-122.4255,"country":"United States","type":"religious","period":5,"architect":"Pier Luigi Nervi"},{"title":"Sacro Cuore, Florence","lat":43.7738722,"lon":11.2780472,"country":"Italy","type":"religious","period":5,"architect":"Pier Luigi Nervi"},{"title":"Embassy of Australia, Paris","lat":48.855,"lon":2.29083,"country":"France","type":"commercial/office","period":5,"architect":"Pier Luigi Nervi"},{"title":"Stadio Flaminio","lat":41.9269556,"lon":12.4723,"country":"Italy","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"George Washington Bridge Bus Station","lat":40.84889,"lon":-73.93833,"country":"United States","type":"infrastructure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Good Hope Centre","lat":-33.92639,"lon":18.43111,"country":"other","type":"cultural","period":5,"architect":"Pier Luigi Nervi"},{"title":"Norfolk Scope","lat":36.853275,"lon":-76.2867222,"country":"United States","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Orbetello Airfield","lat":42.4954639,"lon":11.2393833,"country":"Italy","type":"infrastructure","period":5,"architect":"Pier Luigi Nervi"},{"title":"PalaLottomatica","lat":41.8253639,"lon":12.4665417,"country":"Italy","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"PalaRuffini","lat":45.0577417,"lon":7.6324417,"country":"Italy","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Palazzetto dello Sport","lat":41.929617,"lon":12.470732,"country":"Italy","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Pantelleria Airport","lat":36.81639,"lon":11.96861,"country":"Italy","type":"infrastructure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Paul VI Audience Hall","lat":41.900694,"lon":12.454694,"country":"Italy","type":"residential","period":5,"architect":"Pier Luigi Nervi"},{"title":"Pirelli Tower","lat":45.48472,"lon":9.20139,"country":"Italy","type":"commercial/office","period":5,"architect":"Pier Luigi Nervi"},{"title":"Savona railway station","lat":44.30694,"lon":8.47028,"country":"Italy","type":"infrastructure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Stadio Artemio Franchi","lat":43.78083,"lon":11.28222,"country":"Italy","type":"commercial/office","period":5,"architect":"Pier Luigi Nervi"},{"title":"Thompson Arena","lat":43.70111,"lon":-72.28028,"country":"United States","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Torino Esposizioni","lat":45.04861,"lon":7.68222,"country":"Italy","type":"sports/leisure","period":5,"architect":"Pier Luigi Nervi"},{"title":"Tour de la Bourse","lat":45.500611,"lon":-73.56175,"country":"other","type":"commercial/office","period":5,"architect":"Pier Luigi Nervi"},{"title":"UNESCO Headquarters","lat":48.84944,"lon":2.30611,"country":"France","type":"commercial/office","period":5,"architect":"Pier Luigi Nervi"},{"title":"City of Vicenza and the Palladian Villas","lat":45.54917,"lon":11.54944,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Basilica Palladiana","lat":45.547,"lon":11.5466,"country":"Italy","type":"religious","period":0,"architect":"Andrea Palladio"},{"title":"Casa Cogollo","lat":45.54917,"lon":11.54889,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Antonini, Udine","lat":46.06639,"lon":13.23361,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Barbaran da Porto","lat":45.54861,"lon":11.54556,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Chiericati","lat":45.54917,"lon":11.54917,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Civena","lat":45.54333,"lon":11.54583,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Dalla Torre","lat":45.44167,"lon":10.995,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo del Capitaniato","lat":45.54722,"lon":11.54583,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo della Loggia (Brescia)","lat":45.5399,"lon":10.2192,"country":"unknown","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Pojana, Vicenza","lat":45.5475,"lon":11.545,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Porto in Piazza Castello","lat":45.5456778,"lon":11.5413722,"country":"Italy","type":"infrastructure","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Porto, Vicenza","lat":45.549618,"lon":11.545313,"country":"Italy","type":"infrastructure","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Pretorio, Cividale del Friuli","lat":46.09333,"lon":13.43222,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Schio","lat":45.5517,"lon":11.5435,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Thiene","lat":45.54833,"lon":11.54611,"country":"Italy","type":"commercial/office","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Thiene Bonin Longare","lat":45.54639,"lon":11.54167,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Palazzo Valmarana","lat":45.54778,"lon":11.54361,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"San Giorgio Monastery","lat":45.4295096,"lon":12.3436975,"country":"Italy","type":"religious","period":0,"architect":"Andrea Palladio"},{"title":"Teatro Olimpico","lat":45.55,"lon":11.54917,"country":"Italy","type":"cultural","period":0,"architect":"Andrea Palladio"},{"title":"Villa Angarano","lat":45.78056,"lon":11.72361,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Arnaldi","lat":45.4167,"lon":11.4,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Badoer","lat":45.0303528,"lon":11.6398611,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Barbaro","lat":45.8122,"lon":11.9764,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Caldogno","lat":45.60722,"lon":11.50667,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa La Rotonda","lat":45.5315,"lon":11.5603,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Chiericati","lat":45.50327,"lon":11.64422,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Cornaro","lat":45.60389,"lon":11.99917,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Emo","lat":45.711722,"lon":11.991222,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Forni Cerato","lat":45.65889,"lon":11.56222,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Foscari","lat":45.43528,"lon":12.20111,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Gazzotti Grimani","lat":45.55931,"lon":11.60094,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Godi","lat":45.74565,"lon":11.53472,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Piovene","lat":45.74667,"lon":11.52667,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Pisani, Bagnolo","lat":45.35714,"lon":11.371381,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Pisani, Montagnana","lat":45.2305028,"lon":11.4695389,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Porto, Molina di Malo","lat":45.6727,"lon":11.4639,"country":"Italy","type":"infrastructure","period":0,"architect":"Andrea Palladio"},{"title":"Villa Porto (Vivaro di Dueville)","lat":45.6179,"lon":11.5436,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Repeta","lat":45.3425,"lon":11.5396,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Saraceno","lat":45.3125,"lon":11.56639,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Serego","lat":45.49944,"lon":10.92556,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Thiene","lat":45.5728611,"lon":11.625,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Trissino (Cricoli)","lat":45.56528,"lon":11.54694,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Trissino (Meledo di Sarego)","lat":45.42833,"lon":11.41361,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Valmarana (Lisiera)","lat":45.5798278,"lon":11.6102583,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Valmarana (Vigardolo)","lat":45.6073611,"lon":11.58444,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Villa Zeno","lat":45.70028,"lon":12.64306,"country":"Italy","type":"residential","period":0,"architect":"Andrea Palladio"},{"title":"Wing of the Villa Thiene","lat":45.5031,"lon":11.7923,"country":"Italy","type":"religious","period":0,"architect":"Andrea Palladio"}];
+
+const HEATMAP_DATA = [
+  {type:"commercial/office", Renaissance:1,Baroque:0,"Late Baroque":0,"Neoclassical I":0,"Neoclassical II":0,Modernist:7,Contemporary:5},
+  {type:"cultural",          Renaissance:1,Baroque:0,"Late Baroque":0,"Neoclassical I":1,"Neoclassical II":4,Modernist:2,Contemporary:22},
+  {type:"education",         Renaissance:0,Baroque:1,"Late Baroque":0,"Neoclassical I":0,"Neoclassical II":1,Modernist:0,Contemporary:5},
+  {type:"healthcare",        Renaissance:0,Baroque:1,"Late Baroque":0,"Neoclassical I":0,"Neoclassical II":0,Modernist:0,Contemporary:0},
+  {type:"infrastructure",    Renaissance:3,Baroque:0,"Late Baroque":0,"Neoclassical I":2,"Neoclassical II":3,Modernist:4,Contemporary:10},
+  {type:"public/civic",      Renaissance:0,Baroque:0,"Late Baroque":0,"Neoclassical I":0,"Neoclassical II":0,Modernist:0,Contemporary:1},
+  {type:"religious",         Renaissance:3,Baroque:19,"Late Baroque":20,"Neoclassical I":5,"Neoclassical II":3,Modernist:2,Contemporary:1},
+  {type:"residential",       Renaissance:41,Baroque:8,"Late Baroque":0,"Neoclassical I":7,"Neoclassical II":9,Modernist:1,Contemporary:11},
+  {type:"sports/leisure",    Renaissance:0,Baroque:0,"Late Baroque":0,"Neoclassical I":0,"Neoclassical II":0,Modernist:7,Contemporary:0}
+];
+
+const PERIODS    = ["Renaissance","Baroque","Late Baroque","Neoclassical I","Neoclassical II","Modernist","Contemporary"];
+const PERIOD_DATES = ["1508–80","1600s","1702–70","1700–73","1775–49","1891–79","1937–"];
+const TYPES      = ["residential","religious","cultural","infrastructure","commercial/office","sports/leisure","education","public/civic","healthcare"];
+
+const ARCH_COLORS = {
+  "Andrea Palladio":          "#D85C4A",
+  "Carlo Maderno":            "#E8A878",
+  "Francesco Borromini":      "#C96A2B",
+  "Luigi Vanvitelli":         "#E78CA8",
+  "Bernardo Antonio Vittone": "#B85870",
+  "Carlo Rossi":              "#F08A6C",
+  "Pier Luigi Nervi":         "#8E6A5A",
+  "Renzo Piano":              "#D4786A"
+};
+const TYPE_COLORS = {
+  "residential":       "#D85C4A","religious":"#E8A878","cultural":"#C96A2B",
+  "infrastructure":    "#E78CA8","commercial/office":"#B85870","sports/leisure":"#F08A6C",
+  "education":         "#D4786A","public/civic":"#C4506A","healthcare":"#E8B0A0"
+};
+const PERIOD_COLORS = ["#D85C4A","#C96A2B","#B85870","#E78CA8","#F08A6C","#D4786A","#8E6A5A"];
+
+/* ════════════════════════════════════════════════
+   TOOLTIP
+════════════════════════════════════════════════ */
+const gTT = document.getElementById('g-tooltip');
+function showTT(e, main, sub) {
+  document.getElementById('tt-main').textContent = main;
+  document.getElementById('tt-sub').textContent  = sub || '';
+  gTT.style.opacity = '1';
+  moveTT(e);
+}
+function moveTT(e) {
+  gTT.style.left = (e.clientX + 15) + 'px';
+  gTT.style.top  = (e.clientY - 8) + 'px';
+}
+function hideTT() { gTT.style.opacity = '0'; }
+
+/* ════════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════════ */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   WORLD MAP
+════════════════════════════════════════════════ */
+(function buildMap() {
+  const svg    = d3.select('#map-svg');
+  const W      = document.getElementById('map-svg').parentElement.clientWidth || 1100;
+  const H      = Math.round(W * 0.5);
+  svg.attr('viewBox', `0 0 ${W} ${H}`).attr('width', W).attr('height', H);
+
+  const proj = d3.geoNaturalEarth1()
+    .scale(W / 6.5)
+    .translate([W / 2, H / 2]);
+  const path = d3.geoPath().projection(proj);
+
+  // Sphere + graticule
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#F9F0ED');
+  svg.append('path').datum({type:'Sphere'}).attr('d', path).attr('fill', '#F9F0ED');
+  svg.append('path')
+    .datum(d3.geoGraticule()())
+    .attr('d', path).attr('class', 'graticule');
+
+  // Load world topojson via CDN
+  const mapG    = svg.append('g').attr('class', 'map-countries');
+  const dotsG   = svg.append('g').attr('class', 'dots');
+
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r => r.json())
+    .then(world => {
+      const { feature } = window.topojson || {};
+      // Try topojson if available, else draw placeholder
+      const topo = world;
+      // Use CDN topojson
+      const countries = topojson.feature(topo, topo.objects.countries);
+      mapG.selectAll('path')
+        .data(countries.features)
+        .join('path')
+        .attr('d', path)
+        .attr('class', 'country-path');
+      drawDots();
+    })
+    .catch(() => drawDots()); // fallback: just draw dots on sphere
+
+  // state
+  let colorMode  = 'architect';
+  let eraFilter  = 'all';
+
+  function getColor(d) {
+    if (colorMode === 'architect') return ARCH_COLORS[d.architect] || '#ccc';
+    if (colorMode === 'type')      return TYPE_COLORS[d.type]      || '#ccc';
+    if (colorMode === 'period')    return PERIOD_COLORS[d.period]  || '#ccc';
+    return '#ccc';
+  }
+  function getLabel(d) {
+    if (colorMode === 'architect') return d.architect;
+    if (colorMode === 'type')      return d.type;
+    if (colorMode === 'period')    return PERIODS[d.period];
+  }
+
+  function drawDots() {
+    const data = eraFilter === 'all'
+      ? BUILDINGS
+      : BUILDINGS.filter(b => b.period === +eraFilter);
+
+    document.getElementById('map-chart-title').textContent =
+      `Colored by ${colorMode} — ${data.length} buildings${eraFilter !== 'all' ? ' · ' + PERIODS[+eraFilter] + ' era' : ''}`;
+
+    const dots = dotsG.selectAll('circle').data(data, d => d.title + d.lat);
+    dots.exit().transition().duration(300).attr('r', 0).remove();
+
+    dots.enter().append('circle')
+      .attr('class', 'map-dot')
+      .attr('cx', d => { const p = proj([d.lon, d.lat]); return p ? p[0] : -999; })
+      .attr('cy', d => { const p = proj([d.lon, d.lat]); return p ? p[1] : -999; })
+      .attr('r', 0)
+      .attr('fill', d => getColor(d))
+      .attr('fill-opacity', 0.82)
+      .attr('stroke', '#FFF8F5')
+      .attr('stroke-width', 0.8)
+      .on('mouseenter', function(event, d) {
+        d3.select(this).attr('r', 7).attr('fill-opacity', 1);
+        showTT(event, d.title, `${d.architect} · ${PERIODS[d.period]} · ${d.type}`);
+      })
+      .on('mousemove', moveTT)
+      .on('mouseleave', function(event, d) {
+        d3.select(this).attr('r', 5).attr('fill-opacity', 0.82);
+        hideTT();
+      })
+      .on('click', function(event, d) {
+        const card = document.getElementById('info-card');
+        document.getElementById('info-bar').style.background = getColor(d);
+        document.getElementById('info-type').textContent = d.type + '  ·  ' + PERIODS[d.period];
+        document.getElementById('info-title').textContent = d.title;
+        document.getElementById('info-meta').textContent  = d.architect + '  ·  ' + d.country;
+        card.classList.add('visible');
+      })
+      .merge(dots)
+      .transition().duration(400)
+      .attr('cx', d => { const p = proj([d.lon, d.lat]); return p ? p[0] : -999; })
+      .attr('cy', d => { const p = proj([d.lon, d.lat]); return p ? p[1] : -999; })
+      .attr('fill', d => getColor(d))
+      .attr('r', 5);
+
+    buildLegend();
+  }
+
+  function buildLegend() {
+    const leg = document.getElementById('map-legend');
+    leg.innerHTML = '';
+    let entries = [];
+    if (colorMode === 'architect') entries = Object.entries(ARCH_COLORS);
+    if (colorMode === 'type')      entries = Object.entries(TYPE_COLORS);
+    if (colorMode === 'period')    entries = PERIODS.map((p, i) => [p, PERIOD_COLORS[i]]);
+    entries.forEach(([label, color]) => {
+      leg.innerHTML += `<div class="leg-item"><div class="leg-dot" style="background:${color}"></div><span class="leg-txt">${label}</span></div>`;
+    });
+  }
+
+  // Color mode buttons
+  document.querySelectorAll('[data-color]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-color]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      colorMode = btn.dataset.color;
+      drawDots();
+    });
+  });
+
+  // Era filter buttons
+  document.querySelectorAll('.era-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      eraFilter = btn.dataset.era;
+      drawDots();
+    });
+  });
+
+})(); // end buildMap
+
+// Load topojson
+const topoScript = document.createElement('script');
+topoScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js';
+document.head.appendChild(topoScript);
+
+/* ════════════════════════════════════════════════
+   HEATMAP
+════════════════════════════════════════════════ */
+(function buildHeatmap() {
+  const el   = document.getElementById('hm-svg');
+  const W    = el.parentElement.clientWidth || 900;
+  const m    = { top: 20, right: 20, bottom: 70, left: 140 };
+  const cellH = 44;
+  const H    = m.top + TYPES.length * cellH + m.bottom;
+
+  const svg  = d3.select('#hm-svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('width', W).attr('height', H);
+
+  const iW   = W - m.left - m.right;
+  const iH   = TYPES.length * cellH;
+
+  const g    = svg.append('g').attr('transform', `translate(${m.left},${m.top})`);
+
+  const xSc  = d3.scaleBand().domain(PERIODS).range([0, iW]).padding(0.06);
+  const ySc  = d3.scaleBand().domain(TYPES).range([0, iH]).padding(0.06);
+
+  // Color scale: sequential warm
+  const maxVal = 41;
+  const colorSc = d3.scaleSequential()
+    .domain([0, maxVal])
+    .interpolator(t => {
+      if (t === 0) return '#F9F0ED';
+      // warm: light peach → deep rose
+      const r = Math.round(248 - t * (248 - 185));
+      const g2 = Math.round(240 - t * (240 - 70));
+      const b2 = Math.round(237 - t * (237 - 74));
+      return `rgb(${r},${g2},${b2})`;
+    });
+
+  // Build cell data
+  const cells = [];
+  HEATMAP_DATA.forEach(row => {
+    PERIODS.forEach(p => {
+      cells.push({ type: row.type, period: p, value: row[p] || 0 });
+    });
+  });
+
+  // Cells
+  g.selectAll('rect.cell').data(cells).join('rect')
+    .attr('class', 'cell')
+    .attr('x', d => xSc(d.period))
+    .attr('y', d => ySc(d.type))
+    .attr('width', xSc.bandwidth())
+    .attr('height', ySc.bandwidth())
+    .attr('fill', d => d.value === 0 ? '#F9F0ED' : colorSc(d.value))
+    .attr('rx', 3)
+    .style('cursor', 'pointer')
+    .on('mouseenter', function(event, d) {
+      d3.select(this).attr('stroke', '#2A1F1C').attr('stroke-width', 1.5);
+      showTT(event, d.value === 0 ? 'No buildings' : `${d.value} building${d.value>1?'s':''}`, `${d.period} · ${d.type}`);
+    })
+    .on('mousemove', moveTT)
+    .on('mouseleave', function() {
+      d3.select(this).attr('stroke', 'none');
+      hideTT();
+    });
+
+  // Cell count labels
+  g.selectAll('text.cell-label').data(cells.filter(d => d.value > 0)).join('text')
+    .attr('class', 'cell-label')
+    .attr('x', d => xSc(d.period) + xSc.bandwidth() / 2)
+    .attr('y', d => ySc(d.type)   + ySc.bandwidth() / 2)
+    .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+    .attr('font-family', 'Space Grotesk, sans-serif')
+    .attr('font-size', d => d.value >= 10 ? 13 : 12)
+    .attr('font-weight', '600')
+    .attr('fill', d => d.value > 15 ? '#FFF8F5' : '#2A1F1C')
+    .attr('pointer-events', 'none')
+    .text(d => d.value);
+
+  // X axis
+  g.selectAll('text.x-label').data(PERIODS).join('text')
+    .attr('class', 'x-label')
+    .attr('x', p => xSc(p) + xSc.bandwidth() / 2)
+    .attr('y', iH + 16)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Space Grotesk, sans-serif').attr('font-size', 10).attr('font-weight', 600)
+    .attr('fill', '#5A4540').attr('letter-spacing', '0.06em')
+    .text(p => p.toUpperCase());
+
+  g.selectAll('text.x-date').data(PERIODS).join('text')
+    .attr('class', 'x-date')
+    .attr('x', (p, i) => xSc(p) + xSc.bandwidth() / 2)
+    .attr('y', iH + 30)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Manrope, sans-serif').attr('font-size', 9).attr('font-weight', 300)
+    .attr('fill', '#BDA8A4')
+    .text((p, i) => PERIOD_DATES[i]);
+
+  // Y axis
+  g.selectAll('text.y-label').data(TYPES).join('text')
+    .attr('class', 'y-label')
+    .attr('x', -10).attr('y', t => ySc(t) + ySc.bandwidth() / 2)
+    .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+    .attr('font-family', 'Space Grotesk, sans-serif').attr('font-size', 10).attr('font-weight', 400)
+    .attr('fill', '#8E6F6B')
+    .text(t => t);
+
+  // Color legend strip
+  const legendW = Math.min(200, iW * 0.35);
+  const lgX     = iW - legendW;
+  const lgY     = iH + 46;
+  const lgH     = 8;
+
+  const defs = svg.append('defs');
+  const grad = defs.append('linearGradient').attr('id', 'hm-grad').attr('x1','0%').attr('x2','100%');
+  [0,.25,.5,.75,1].forEach(t => {
+    grad.append('stop').attr('offset', `${t*100}%`).attr('stop-color', colorSc(maxVal * t));
+  });
+
+  g.append('rect').attr('x', lgX).attr('y', lgY).attr('width', legendW).attr('height', lgH)
+    .attr('fill', 'url(#hm-grad)').attr('rx', 2);
+  g.append('text').attr('x', lgX).attr('y', lgY - 4)
+    .attr('font-family','Space Grotesk,sans-serif').attr('font-size',8).attr('fill','#8E6F6B')
+    .text('0');
+  g.append('text').attr('x', lgX + legendW).attr('y', lgY - 4).attr('text-anchor','end')
+    .attr('font-family','Space Grotesk,sans-serif').attr('font-size',8).attr('fill','#8E6F6B')
+    .text('41 buildings');
+
+  // Era fingerprint mini-cards
+  const profiles = document.getElementById('era-profiles');
+  PERIODS.forEach((p, i) => {
+    const rows  = HEATMAP_DATA.map(r => ({ type: r.type, val: r[p] || 0 })).sort((a,b)=>b.val-a.val);
+    const top   = rows.filter(r => r.val > 0);
+    const total = rows.reduce((s,r)=>s+r.val,0);
+    const dom   = top[0] || {type:'—',val:0};
+    const pct   = total ? Math.round(dom.val/total*100) : 0;
+    const div   = document.createElement('div');
+    div.style.cssText = `background:#fff;border:1px solid var(--rule);border-radius:3px;padding:14px 14px 12px;`;
+    div.innerHTML = `
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin-bottom:3px;">${p}</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:9px;color:var(--ink-40);margin-bottom:10px;">${PERIOD_DATES[i]} · ${total} bldgs</div>
+      <div style="font-family:'Instrument Serif',serif;font-size:28px;color:var(--ink);line-height:1;">${dom.val}</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:9px;color:var(--ink-40);margin-top:2px;">${dom.type}</div>
+      <div style="font-size:9px;color:var(--ink-20);margin-top:2px;">${pct}% of era</div>
+      <div style="height:3px;background:var(--rule);border-radius:2px;margin-top:10px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${TYPE_COLORS[dom.type]||'#ccc'};border-radius:2px;"></div>
+      </div>`;
+    profiles.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>
